@@ -16,7 +16,8 @@
     "lint": "tsc --noEmit && eslint src --ext .ts",
     "test": "echo \"no test specified\" && exit 0",
     "upgrade-interactive": "npm-check --update",
-    "install-peers": "npm-install-peers"
+    "install-peers": "npm-install-peers",
+    "publish:np": "np"
   },
   "repository": {
     "type": "git",
@@ -59,6 +60,7 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.5",
+    "np": "^7.0.0",
     "npm-check": "^5.9.2",
     "prettier": "^2.1.2",
     "rollup": "^2.32.1",

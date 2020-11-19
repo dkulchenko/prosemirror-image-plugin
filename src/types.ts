@@ -16,6 +16,5 @@ export interface RemoveImagePlaceholder {
 export type ImagePluginAction = InsertImagePlaceholder | RemoveImagePlaceholder;
 
 export interface ImagePluginSettings {
-  createPlaceholder: (dataURI: string) => Node;
-  uploadFile: (dataURI: string) => Promise<string>;
+  uploadFile: (file: Blob) => Promise<string>;
 }
