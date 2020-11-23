@@ -1,83 +1,33 @@
 // eslint-disable-next-line import/no-unresolved
-import { Plugin, TextSelection, Transaction } from "prosemirror-state";
-import { Node, Schema } from "prosemirror-model";
+import { Plugin, Transaction } from "prosemirror-state";
+import { Schema } from "prosemirror-model";
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
 
 import {
   ImagePluginAction,
   ImagePluginSettings,
   ImagePluginState,
+  imageAlign,
 } from "./types";
+
 import {
   createPlaceholder,
   dataURLtoBlob,
-  defaultDeleteSrc,
-  defaultExtraAttributes,
-  defaultUploadFile,
   imagePluginKey,
   startImageUpload,
 } from "./utils";
 
+import updateImageNode from "./updateImageNode";
+import {
+  defaultCreateOverlay,
+  defaultDeleteSrc,
+  defaultExtraAttributes,
+  defaultUpdateOverlay,
+  defaultUploadFile,
+} from "./defaults";
+import imageNodeView from "./imageNodeView";
+
 export const insertLatexNode = (a: any) => console.log;
-
-export const updateImageNode = (
-  nodes: Schema["spec"]["nodes"],
-  // Additional attributes where the keys are attribute names and values are default values
-  extraAttributes: Record<string, string | null> = defaultExtraAttributes,
-  withTitle = true
-): typeof nodes => {
-  const attributesUpdate = Object.keys(extraAttributes)
-    .map((attrKey) => ({
-      [attrKey]: {
-        default: extraAttributes[attrKey] || null,
-      },
-    }))
-    .reduce((acc, curr) => ({ ...acc, ...curr }), {});
-
-  const attributeKeys = [...Object.keys(extraAttributes), "src", "alt"];
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  return nodes.update("image", {
-    ...(withTitle ? { content: "inline*" } : {}),
-    attrs: {
-      src: { default: null },
-      alt: { default: null },
-      ...attributesUpdate,
-    },
-    group: "block",
-    atom: true,
-    draggable: true,
-    toDOM(node: Node) {
-      const toAttributes = attributeKeys
-        .map((attrKey) => ({ [`imagePlugin-${attrKey}`]: node.attrs[attrKey] }))
-        // merge
-        .reduce((acc, curr) => ({ ...acc, ...curr }), {});
-      return [
-        "div",
-        {
-          class: `imagePluginRoot`,
-          ...toAttributes,
-        },
-        0,
-      ];
-    },
-    parseDOM: [
-      {
-        tag: "div.imagePluginRoot",
-        getAttrs(dom: HTMLElement) {
-          return (
-            attributeKeys
-              .map((attrKey) => ({
-                [attrKey]: dom.getAttribute(`imagePlugin-${attrKey}`),
-              }))
-              // merge
-              .reduce((acc, curr) => ({ ...acc, ...curr }), {})
-          );
-        },
-      },
-    ],
-  });
-};
 
 export const addImageToCursor = (
   src: string,
@@ -94,9 +44,11 @@ export const addImageToCursor = (
 
 export const defaultSettings: ImagePluginSettings = {
   uploadFile: defaultUploadFile,
-  hastTitle: true,
+  hasTitle: true,
   deleteSrc: defaultDeleteSrc,
   extraAttributes: defaultExtraAttributes,
+  createOverlay: defaultCreateOverlay,
+  updateOverlay: defaultUpdateOverlay,
 };
 
 export const imagePlugin = <T extends Schema>(
@@ -206,63 +158,10 @@ export const imagePlugin = <T extends Schema>(
         },
       },
       nodeViews: {
-        image: (node, view, getPos, decorations) => {
-          const root = document.createElement("div");
-          root.className = "imagePluginRoot";
-          const image = document.createElement("img");
-          image.className = "imagePluginImg";
-          const contentDOM = document.createElement("div");
-          contentDOM.className = "imagePluginContent";
-          root.appendChild(image);
-          root.appendChild(contentDOM);
-
-          // Handle image
-          image.alt = node.attrs.alt;
-          image.src = node.attrs.src;
-
-          // Handle contentDOM
-          contentDOM.addEventListener("click", (e) => {
-            if (
-              !getPos ||
-              typeof getPos !== "function" ||
-              contentDOM.innerText.length > 1
-            ) {
-              return;
-            }
-            e.preventDefault();
-            view.dispatch(
-              view.state.tr.setSelection(
-                TextSelection.near(view.state.doc.resolve(getPos() + 1))
-              )
-            );
-            view.focus();
-          });
-          contentDOM.className = "text";
-
-          const updateDOM = (updatedNode: Node) => {
-            Object.keys(updatedNode.attrs).map((attr) =>
-              root.setAttribute(`imagePlugin-${attr}`, updatedNode.attrs[attr])
-            );
-          };
-          updateDOM(node);
-
-          return {
-            dom: root,
-            contentDOM,
-            selectable: true,
-            content: "text*",
-            update: (updateNode: Node) => {
-              updateDOM(updateNode);
-              return true;
-            },
-            stopEvent: (e: Event) => e.target === contentDOM,
-            ignoreMutation: () => false,
-            destroy: () => {
-              pluginSettings.deleteSrc(node.attrs.src);
-            },
-          };
-        },
+        image: imageNodeView(pluginSettings),
       },
     },
   });
 };
+
+export { updateImageNode, imageAlign };

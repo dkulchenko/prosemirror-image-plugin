@@ -1,7 +1,8 @@
 import { EditorState, PluginKey } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { Schema } from "prosemirror-model";
+import { Node as PMNode, Schema } from "prosemirror-model";
 import {
+  imageAlign,
   ImagePluginState,
   InsertImagePlaceholder,
   RemoveImagePlaceholder,
@@ -24,23 +25,6 @@ export const createPlaceholder = () => {
   const placeholder = document.createElement("placeholder");
   return placeholder;
 };
-
-export const defaultDeleteSrc = (src: string) => Promise.resolve();
-
-export const defaultUploadFile = (file: Blob): Promise<string> =>
-  new Promise((res) =>
-    setTimeout(() => {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        const { result } = reader;
-
-        if (result) {
-          res(result.toString());
-        }
-      });
-      reader.readAsDataURL(file);
-    }, 2000)
-  );
 
 export const imagePluginKey = new PluginKey<ImagePluginState>("imagePlugin");
 
@@ -97,13 +81,16 @@ export const startImageUpload = (
   );
 };
 
-export enum imageAlign {
-  left = "left",
-  right = "right",
-  center = "center",
-  full = "full",
-}
-
-export const defaultExtraAttributes = {
-  align: imageAlign.left,
+export const generateChangeAlignment = (
+  align: imageAlign,
+  getPos: (() => number) | boolean,
+  view: EditorView,
+  node: PMNode
+) => () => {
+  const pos = typeof getPos === "function" ? getPos() : 0;
+  const t = view.state.tr.setNodeMarkup(pos, undefined, {
+    ...node.attrs,
+    align,
+  });
+  view.dispatch(t);
 };
