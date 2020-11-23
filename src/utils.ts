@@ -22,12 +22,10 @@ export const dataURLtoBlob = (dataURI: string) => {
 
 export const createPlaceholder = () => {
   const placeholder = document.createElement("placeholder");
-  // placeholder.style.display = "inline";
-  // placeholder.style.width = "50px";
-  // placeholder.style.height = "50px";
-  // placeholder.style.backgroundColor = "red";
   return placeholder;
 };
+
+export const defaultDeleteSrc = (src: string) => Promise.resolve();
 
 export const defaultUploadFile = (file: Blob): Promise<string> =>
   new Promise((res) =>
@@ -97,4 +95,15 @@ export const startImageUpload = (
       view.dispatch(tr.setMeta(imagePluginKey, { remove: { id } }));
     }
   );
+};
+
+export enum imageAlign {
+  left = "left",
+  right = "right",
+  center = "center",
+  full = "full",
+}
+
+export const defaultExtraAttributes = {
+  align: imageAlign.left,
 };

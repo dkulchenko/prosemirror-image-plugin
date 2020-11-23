@@ -17,4 +17,7 @@ export type ImagePluginAction = InsertImagePlaceholder | RemoveImagePlaceholder;
 
 export interface ImagePluginSettings {
   uploadFile: (file: Blob) => Promise<string>;
+  deleteSrc: (src: string) => Promise<void>;
+  hastTitle: boolean;
+  extraAttributes: Record<string, string | null>;
 }
