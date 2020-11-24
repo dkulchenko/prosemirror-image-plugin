@@ -32,6 +32,7 @@ export interface ImagePluginSettings {
     view: EditorView,
     node: PMNode
   ) => void;
+  defaultTitle: string;
 }
 
 // eslint-disable-next-line no-shadow

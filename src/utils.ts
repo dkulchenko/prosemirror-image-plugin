@@ -3,6 +3,7 @@ import { EditorView } from "prosemirror-view";
 import { Node as PMNode, Schema } from "prosemirror-model";
 import {
   imageAlign,
+  ImagePluginSettings,
   ImagePluginState,
   InsertImagePlaceholder,
   RemoveImagePlaceholder,
@@ -37,7 +38,7 @@ const findPlaceholder = (state: EditorState, id: unknown) => {
 export const startImageUpload = (
   view: EditorView,
   file: Blob,
-  uploadFile: (fileToUpload: Blob) => Promise<string>,
+  pluginSettings: ImagePluginSettings,
   schema: Schema,
   pos?: number
 ) => {
@@ -55,7 +56,7 @@ export const startImageUpload = (
   tr.setMeta(imagePluginKey, imageMeta);
   view.dispatch(tr);
 
-  uploadFile(file).then(
+  pluginSettings.uploadFile(file).then(
     (url) => {
       const placholderPos = findPlaceholder(view.state, id);
       // If the content around the placeholder has been deleted, drop
@@ -66,10 +67,14 @@ export const startImageUpload = (
       const removeMeta: RemoveImagePlaceholder = { type: "remove", id };
       view.dispatch(
         view.state.tr
-          .replaceWith(
+          .insert(
             placholderPos,
-            placholderPos,
-            schema.nodes.image.create({ src: url })
+            schema.nodes.image.create(
+              { src: url },
+              pluginSettings.hasTitle
+                ? schema.text(pluginSettings.defaultTitle)
+                : undefined
+            )
           )
           .setMeta(imagePluginKey, removeMeta)
       );

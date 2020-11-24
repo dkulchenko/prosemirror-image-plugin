@@ -1,6 +1,6 @@
 import { EditorView } from "prosemirror-view";
 import { Node as PMNode } from "prosemirror-model";
-import { imageAlign } from "./types";
+import { imageAlign, ImagePluginSettings } from "./types";
 import { generateChangeAlignment } from "./utils";
 
 export const defaultDeleteSrc = (src: string) => Promise.resolve();
@@ -77,4 +77,14 @@ export const defaultUpdateOverlay = (
       return null;
     });
   }
+};
+
+export const defaultSettings: ImagePluginSettings = {
+  uploadFile: defaultUploadFile,
+  hasTitle: true,
+  deleteSrc: defaultDeleteSrc,
+  extraAttributes: defaultExtraAttributes,
+  createOverlay: defaultCreateOverlay,
+  updateOverlay: defaultUpdateOverlay,
+  defaultTitle: "Image title",
 };
