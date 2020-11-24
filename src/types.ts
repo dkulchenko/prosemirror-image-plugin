@@ -33,6 +33,7 @@ export interface ImagePluginSettings {
     node: PMNode
   ) => void;
   defaultTitle: string;
+  defaultAlt: string;
 }
 
 // eslint-disable-next-line no-shadow

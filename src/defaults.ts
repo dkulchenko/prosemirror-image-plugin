@@ -87,4 +87,5 @@ export const defaultSettings: ImagePluginSettings = {
   createOverlay: defaultCreateOverlay,
   updateOverlay: defaultUpdateOverlay,
   defaultTitle: "Image title",
+  defaultAlt: "Image",
 };

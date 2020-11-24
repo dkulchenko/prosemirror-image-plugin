@@ -30,7 +30,14 @@ export default <T extends Schema>(
       firstChild instanceof HTMLImageElement
     ) {
       const blob = dataURLtoBlob(firstChild.src);
-      startImageUpload(view, blob, pluginSettings, schema, posData.pos);
+      startImageUpload(
+        view,
+        blob,
+        pluginSettings.defaultAlt,
+        pluginSettings,
+        schema,
+        posData.pos
+      );
     }
     event.preventDefault();
     event.stopPropagation();
@@ -38,7 +45,14 @@ export default <T extends Schema>(
   }
   // The dropped data is image dataURI
   if (file && posData) {
-    startImageUpload(view, file, pluginSettings, schema, posData.pos);
+    startImageUpload(
+      view,
+      file,
+      pluginSettings.defaultAlt,
+      pluginSettings,
+      schema,
+      posData.pos
+    );
     event.preventDefault();
     event.stopPropagation();
     return true;

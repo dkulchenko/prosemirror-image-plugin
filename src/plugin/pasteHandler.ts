@@ -23,7 +23,13 @@ export default <T extends Schema>(
   if (!blob) {
     return false;
   }
-  startImageUpload(view, blob, pluginSettings, schema);
+  startImageUpload(
+    view,
+    blob,
+    pluginSettings.defaultAlt,
+    pluginSettings,
+    schema
+  );
   event.preventDefault();
   return true;
 };

@@ -38,6 +38,7 @@ const findPlaceholder = (state: EditorState, id: unknown) => {
 export const startImageUpload = (
   view: EditorView,
   file: Blob,
+  alt: string,
   pluginSettings: ImagePluginSettings,
   schema: Schema,
   pos?: number
@@ -70,7 +71,7 @@ export const startImageUpload = (
           .insert(
             placholderPos,
             schema.nodes.image.create(
-              { src: url },
+              { src: url, alt },
               pluginSettings.hasTitle
                 ? schema.text(pluginSettings.defaultTitle)
                 : undefined

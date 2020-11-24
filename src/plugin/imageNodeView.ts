@@ -70,7 +70,6 @@ const imageNodeView = (pluginSettings: ImagePluginSettings) => (
       updateDOM(updateNode);
       return true;
     },
-
     ignoreMutation: () => false,
     destroy: () => {
       pluginSettings.deleteSrc(node.attrs.src);
