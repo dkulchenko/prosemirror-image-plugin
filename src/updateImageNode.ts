@@ -1,11 +1,12 @@
 import { Node, Schema } from "prosemirror-model";
 import { defaultExtraAttributes } from "./defaults";
+import { ImagePluginSettings } from "./types";
 
 const updateImageNode = (
   nodes: Schema["spec"]["nodes"],
   // Additional attributes where the keys are attribute names and values are default values
-  extraAttributes: Record<string, string | null> = defaultExtraAttributes,
-  hasTitle = true
+  pluginSettings: ImagePluginSettings,
+  extraAttributes: Record<string, string | null> = defaultExtraAttributes
 ): typeof nodes => {
   const attributesUpdate = Object.keys(extraAttributes)
     .map((attrKey) => ({
@@ -19,7 +20,7 @@ const updateImageNode = (
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   return nodes.update("image", {
-    ...(hasTitle ? { content: "inline*" } : {}),
+    ...(pluginSettings.hasTitle ? { content: "inline*" } : {}),
     attrs: {
       src: { default: null },
       alt: { default: null },

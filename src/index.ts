@@ -1,3 +1,4 @@
+import { defaultSettings } from "./defaults";
 import imagePlugin from "./plugin/index";
 
 import {
@@ -22,4 +23,5 @@ export {
   ImagePluginState,
   imagePlugin,
   startImageUpload,
+  defaultSettings,
 };
