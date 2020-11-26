@@ -9,7 +9,7 @@ import {
   RemoveImagePlaceholder,
 } from "./types";
 
-export const dataURLtoBlob = (dataURI: string) => {
+export const dataURIToFile = (dataURI: string, name: string) => {
   const arr = dataURI.split(",");
   const mime = arr[0]?.match(/:(.*?);/)?.[1];
   const bstr = atob(arr[1]);
@@ -19,7 +19,7 @@ export const dataURLtoBlob = (dataURI: string) => {
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n);
   }
-  return new Blob([u8arr], { type: mime });
+  return new File([u8arr], name, { type: mime });
 };
 
 export const createPlaceholder = () => {
@@ -37,7 +37,7 @@ const findPlaceholder = (state: EditorState, id: unknown) => {
 
 export const startImageUpload = (
   view: EditorView,
-  file: Blob,
+  file: File,
   alt: string,
   pluginSettings: ImagePluginSettings,
   schema: Schema,

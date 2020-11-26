@@ -1,7 +1,7 @@
 import { Schema } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
 import { ImagePluginSettings } from "../types";
-import { dataURLtoBlob, startImageUpload } from "../utils";
+import { dataURIToFile, startImageUpload } from "../utils";
 
 export default <T extends Schema>(
   pluginSettings: ImagePluginSettings,
@@ -29,10 +29,13 @@ export default <T extends Schema>(
       container.children.length === 1 &&
       firstChild instanceof HTMLImageElement
     ) {
-      const blob = dataURLtoBlob(firstChild.src);
+      const fileFromHTML = dataURIToFile(
+        firstChild.src,
+        encodeURIComponent(firstChild.alt || "dragged image")
+      );
       startImageUpload(
         view,
-        blob,
+        fileFromHTML,
         pluginSettings.defaultAlt,
         pluginSettings,
         schema,

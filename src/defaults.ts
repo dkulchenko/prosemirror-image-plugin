@@ -5,7 +5,7 @@ import { generateChangeAlignment } from "./utils";
 
 export const defaultDeleteSrc = (src: string) => Promise.resolve();
 
-export const defaultUploadFile = (file: Blob): Promise<string> =>
+export const defaultUploadFile = (file: File): Promise<string> =>
   new Promise((res) =>
     setTimeout(() => {
       const reader = new FileReader();

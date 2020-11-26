@@ -19,13 +19,13 @@ export default <T extends Schema>(
   }
 
   const item = items[0];
-  const blob = item.getAsFile();
-  if (!blob) {
+  const file = item.getAsFile();
+  if (!file) {
     return false;
   }
   startImageUpload(
     view,
-    blob,
+    file,
     pluginSettings.defaultAlt,
     pluginSettings,
     schema
