@@ -12,11 +12,6 @@ export default {
       format: "cjs",
     },
     { file: pkg.module, format: "es" },
-    // {
-    //   file: pkg.browser,
-    //   format: "iife",
-    //   name: "ProseMirrorImagePlugin", // the global which can be used in a browser
-    // },
   ],
   external: [...Object.keys(pkg.dependencies || {})],
   plugins: [typescript(), terser()],
