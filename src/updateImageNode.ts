@@ -1,13 +1,12 @@
 import { Node, Schema } from "prosemirror-model";
-import { defaultExtraAttributes } from "./defaults";
 import { ImagePluginSettings } from "./types";
 
 const updateImageNode = (
   nodes: Schema["spec"]["nodes"],
   // Additional attributes where the keys are attribute names and values are default values
-  pluginSettings: ImagePluginSettings,
-  extraAttributes: Record<string, string | null> = defaultExtraAttributes
+  pluginSettings: ImagePluginSettings
 ): typeof nodes => {
+  const { extraAttributes } = pluginSettings;
   const attributesUpdate = Object.keys(extraAttributes)
     .map((attrKey) => ({
       [attrKey]: {
