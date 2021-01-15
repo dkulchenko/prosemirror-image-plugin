@@ -4,6 +4,7 @@
 
 By [Viktor Váczi](https://emergence-engineering.com/cv/viktor) at [Emergence Engineering](https://emergence-engineering.com/)
 
+Try it out at <https://emergence-engineering.com/blog/prosemirror-image-plugin>
 # Features
 
 - Drag and drop or paste images from anywhere
