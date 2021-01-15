@@ -14,7 +14,7 @@ export interface RemoveImagePlaceholder {
   id: unknown;
 }
 
-  export type ImagePluginAction = InsertImagePlaceholder | RemoveImagePlaceholder;
+export type ImagePluginAction = InsertImagePlaceholder | RemoveImagePlaceholder;
 
 export interface ImagePluginSettings {
   uploadFile: (file: File) => Promise<string>;
