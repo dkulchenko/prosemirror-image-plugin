@@ -65,32 +65,33 @@ const view: EditorView = new EditorView(document.getElementById("editor"), {
 # Configuration
 ### `ImagePluginSettings`
 
-| name            | type                                                                                                 | description  |
-| --------------- |:----------------------------------------------------------------------------------------------------:| -----:|
+| name            | type                                                                                                 | description                                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | uploadFile      |  (file: File) => Promise<string>                                                                     | Uploads the image file to a remote server and returns the uploaded image URL. By default it returns the dataURI of the image. |
-| deleteSrc       | (src: string) => Promise<void>                                                                       | Deletes the image from the server. |
-| hasTitle        | boolean                                                                                              | If set to `true` then the image has a title field. True by default. |
-| extraAttributes | Record<string, string &#124; null>                                                                   | Extra attributes on the new `image` node. By default is `defaultExtraAttributes`.|
-| createOverlay   | ( node: PMNode, getPos: (() => number)  &#124; boolean, view: EditorView) => Node  &#124; undefined  | create an overlay DOM Node for the `image` node. The default is the one you see in the intro image. |
-| updateOverlay   | ( overlayRoot: Node, getPos: (() => number)  &#124; boolean, view: EditorView, node: PMNode) => void | The function that runs whenever the `image` ProseMirror node changes to update the overlay. |
-| defaultTitle    | string                                                                                               | Default title on new images. |
-| defaultAlt      | string                                                                                               | Default alt on new images ( when it's not defined ). |
+| deleteSrc       | (src: string) => Promise<void>                                                                       | Deletes the image from the server.                                                                                            |
+| hasTitle        | boolean                                                                                              | If set to `true` then the image has a title field. True by default.                                                           |
+| extraAttributes | Record<string, string &#124; null>                                                                   | Extra attributes on the new `image` node. By default is `defaultExtraAttributes`.                                             |
+| createOverlay   | ( node: PMNode, getPos: (() => number)  &#124; boolean, view: EditorView) => Node  &#124; undefined  | create an overlay DOM Node for the `image` node. The default is the one you see in the intro image.                           |
+| updateOverlay   | ( overlayRoot: Node, getPos: (() => number)  &#124; boolean, view: EditorView, node: PMNode) => void | The function that runs whenever the `image` ProseMirror node changes to update the overlay.                                   |
+| defaultTitle    | string                                                                                               | Default title on new images.                                                                                                  |
+| defaultAlt      | string                                                                                               | Default alt on new images ( when it's not defined ).                                                                          |
 
 ### `updateImageNode`
 
 Arguments
 
-| index | name            | type                                                        | description |
-| ----- |:---------------:| -----------------------------------------------------------:|: ----------:|
-| 1     | nodes           | Schema["spec"]["nodes"]                                     | nodes from the to-be-updated Schema spec |
-| 2     | pluginSettings  | ImagePluginSettings                                         | same plugin settings the plugin will be initialized with |
+
+| index | name           | type                      | description                                              |
+|-------|----------------|---------------------------|----------------------------------------------------------|
+| 1     | nodes          | Schema ["spec"] ["nodes"] | nodes from the to-be-updated Schema spec                 |
+| 2     | pluginSettings | ImagePluginSettings       | same plugin settings the plugin will be initialized with |
 
 ### `startImageUpload`
 
 Arguments
 
 | index | name           | type                 | description                                          |
-| ----- |:--------------:| --------------------:|: ---------------------------------------------------:|
+| ----- | -------------- | -------------------- | ---------------------------------------------------  |
 | 1     | view           | EditorView           | Reference of the mounted editor view                 |
 | 2     | file           | File                 | image file to be uploaded                            |
 | 3     | alt            | string               | alt of the file ( file.name usually works )          |
