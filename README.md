@@ -5,6 +5,7 @@
 By [Viktor Váczi](https://emergence-engineering.com/cv/viktor) at [Emergence Engineering](https://emergence-engineering.com/)
 
 Try it out at <https://emergence-engineering.com/blog/prosemirror-image-plugin>
+
 # Features
 
 - Drag and drop or paste images from anywhere
@@ -63,7 +64,9 @@ const view: EditorView = new EditorView(document.getElementById("editor"), {
 ```
 
 # Configuration
-### `ImagePluginSettings`
+### ImagePluginSettings
+
+Interface for the settings used by this plugin.
 
 | name            | type                                                                                                 | description                                                                                                                   |
 | --------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -76,19 +79,22 @@ const view: EditorView = new EditorView(document.getElementById("editor"), {
 | defaultTitle    | string                                                                                               | Default title on new images.                                                                                                  |
 | defaultAlt      | string                                                                                               | Default alt on new images ( when it's not defined ).                                                                          |
 
-### `updateImageNode`
+### updateImageNode
+Returns the updated nodes ( `Schema["spec"]["nodes"] type` )
 
-Arguments
-
+Arguments:
 
 | index | name           | type                      | description                                              |
 |-------|----------------|---------------------------|----------------------------------------------------------|
 | 1     | nodes          | Schema ["spec"] ["nodes"] | nodes from the to-be-updated Schema spec                 |
 | 2     | pluginSettings | ImagePluginSettings       | same plugin settings the plugin will be initialized with |
 
-### `startImageUpload`
+### startImageUpload
 
-Arguments
+Dispatches a transaction in the editor view which starts the image upload process ( and places placeholder etc ).
+Returns `undefined`
+
+Arguments:
 
 | index | name           | type                 | description                                          |
 | ----- | -------------- | -------------------- | ---------------------------------------------------  |
