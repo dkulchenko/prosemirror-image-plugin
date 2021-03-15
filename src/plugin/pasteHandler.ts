@@ -23,6 +23,10 @@ export default <T extends Schema>(
   if (!file) {
     return false;
   }
+  if (event?.clipboardData?.types.includes("text/rtf")) {
+    // Do not convert pasted rtf to image
+    return false;
+  }
   startImageUpload(
     view,
     file,
