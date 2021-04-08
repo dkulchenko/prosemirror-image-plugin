@@ -1,5 +1,5 @@
 {
-  "name": "prosemirror-image-plugin",
+  "name": "@emergence-engineering/prosemirror-image-plugin",
   "version": "1.1.1",
   "description": "ProseMirror image plugin for advanced image features",
   "main": "dist/index.js",
@@ -39,6 +39,9 @@
     "url": "https://gitlab.com/emergence-engineering/prosemirror-image-plugin/issues"
   },
   "homepage": "https://gitlab.com/emergence-engineering/prosemirror-image-plugin#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "prosemirror-commands": "^1.1.4",
     "prosemirror-model": "^1.11.0",
