@@ -39,7 +39,7 @@ const updateImageNode = (
           class: `imagePluginRoot`,
           ...toAttributes,
         },
-        0,
+        ...(pluginSettings.hasTitle ? [0] : []),
       ];
     },
     parseDOM: [

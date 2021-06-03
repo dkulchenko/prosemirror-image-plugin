@@ -45,7 +45,15 @@ const imageNodeView = (pluginSettings: ImagePluginSettings) => (
 
   // Handle image
   image.alt = node.attrs.alt;
-  image.src = node.attrs.src;
+  if (pluginSettings.downloadImage) {
+    if (pluginSettings.downloadPlaceholder)
+      image.src = pluginSettings.downloadPlaceholder;
+    pluginSettings.downloadImage(node.attrs.src).then((src) => {
+      image.src = src;
+    });
+  } else {
+    image.src = node.attrs.src;
+  }
 
   const updateDOM = (updatedNode: Node) => {
     Object.keys(updatedNode.attrs).map((attr) =>
