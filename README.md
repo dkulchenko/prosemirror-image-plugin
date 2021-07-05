@@ -20,7 +20,7 @@ Try it out at <https://emergence-engineering.com/blog/prosemirror-image-plugin>
 import { schema } from "prosemirror-schema-basic";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import { defaultSettings } from "prosemirror-image-plugin";
+import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin";
 
 // Update your settings here!
 const imageSettings = {...defaultSettings};
