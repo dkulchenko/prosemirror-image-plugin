@@ -1,6 +1,6 @@
 {
   "name": "prosemirror-image-plugin",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "ProseMirror image plugin for advanced image features",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -61,6 +61,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
     "np": "^7.5.0",
     "npm-check": "^5.9.2",
     "prettier": "^2.3.2",
