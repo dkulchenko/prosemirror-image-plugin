@@ -1,21 +1,18 @@
 {
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "parser": "@typescript-eslint/parser",
   "rules": {
-    "import/no-unresolved": "off",
-    "import/extensions": "off"
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": "off"
   },
   "env": {
     "browser": true
   },
-  "plugins": [
-    "@typescript-eslint",
-    "prettier"
-  ],
   "extends": [
-    "airbnb",
+    "airbnb-typescript",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript",
-    "plugin:prettier/recommended",
-    "prettier/@typescript-eslint"
+    "plugin:prettier/recommended"
   ]
 }

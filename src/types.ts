@@ -38,7 +38,7 @@ export interface ImagePluginSettings {
   defaultAlt: string;
 }
 
-// eslint-disable-next-line no-shadow
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export enum imageAlign {
   left = "left",
   right = "right",

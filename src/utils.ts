@@ -87,16 +87,18 @@ export const startImageUpload = (
   );
 };
 
-export const generateChangeAlignment = (
-  align: imageAlign,
-  getPos: (() => number) | boolean,
-  view: EditorView,
-  node: PMNode
-) => () => {
-  const pos = typeof getPos === "function" ? getPos() : 0;
-  const t = view.state.tr.setNodeMarkup(pos, undefined, {
-    ...node.attrs,
-    align,
-  });
-  view.dispatch(t);
-};
+export const generateChangeAlignment =
+  (
+    align: imageAlign,
+    getPos: (() => number) | boolean,
+    view: EditorView,
+    node: PMNode
+  ) =>
+  () => {
+    const pos = typeof getPos === "function" ? getPos() : 0;
+    const t = view.state.tr.setNodeMarkup(pos, undefined, {
+      ...node.attrs,
+      align,
+    });
+    view.dispatch(t);
+  };
