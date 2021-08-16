@@ -240,6 +240,11 @@ placeholder {
   }
 ```
 
+## Known issues
+
+- titles and inline nodes do not work well together. If `hasTitle` is true then
+`isBlock` should also be true.
+
 ## Development
 
 ### Running & linking locally

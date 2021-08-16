@@ -36,6 +36,9 @@ export interface ImagePluginSettings {
   ) => void;
   defaultTitle: string;
   defaultAlt: string;
+  // enableResize: boolean;
+  // maxImageSize: number;
+  isBlock: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

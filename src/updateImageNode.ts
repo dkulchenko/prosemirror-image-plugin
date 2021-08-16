@@ -25,8 +25,10 @@ const updateImageNode = (
       alt: { default: null },
       ...attributesUpdate,
     },
-    group: "block",
     atom: true,
+    ...(pluginSettings.isBlock
+      ? { group: "block" }
+      : { group: "inline", inline: true }),
     draggable: true,
     toDOM(node: Node) {
       const toAttributes = attributeKeys
