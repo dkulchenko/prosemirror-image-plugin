@@ -75,12 +75,13 @@ const imageNodeView =
         : {}),
       dom: root,
       update: (updateNode: Node) => {
+        if (updateNode.type.name !== "image") return false;
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
         updateDOM(updateNode);
         return false;
       },
-      ignoreMutation: () => false,
+      ignoreMutation: () => true,
       destroy: () => {
         pluginSettings.deleteSrc(node.attrs.src);
       },
