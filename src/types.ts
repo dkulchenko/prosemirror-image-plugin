@@ -36,8 +36,8 @@ export interface ImagePluginSettings {
   ) => void;
   defaultTitle: string;
   defaultAlt: string;
-  // enableResize: boolean;
-  // maxImageSize: number;
+  enableResize: boolean;
+  maxImageSize: number;
   isBlock: boolean;
 }
 
@@ -47,4 +47,23 @@ export enum imageAlign {
   right = "right",
   center = "center",
   fullWidth = "fullWidth",
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum resizeDirection {
+  top = "top",
+  topRight = "topRight",
+  right = "right",
+  bottomRight = "bottomRight",
+  bottom = "bottom",
+  bottomLeft = "bottomLeft",
+  left = "left",
+  topLeft = "topLeft",
+}
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export enum imagePluginClassNames {
+  imageResizeBox = "imageResizeBox",
+  imageResizeBoxControl = "imageResizeBoxControl",
+  imageResizeBoxImage = "imageResizeBoxImage",
 }

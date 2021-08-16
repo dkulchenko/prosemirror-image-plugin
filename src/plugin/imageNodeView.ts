@@ -2,6 +2,10 @@ import { TextSelection } from "prosemirror-state";
 import { Node } from "prosemirror-model";
 import { EditorView, NodeView } from "prosemirror-view";
 import { ImagePluginSettings } from "../types";
+import createResizeControls from "./resize/createResizeControls";
+import getImageDimensions from "./resize/getImageDimensions";
+import getMaxWidth from "./resize/getMaxWidth";
+import calculateImageDimensions from "./resize/calculateImageDimensions";
 
 const imageNodeView =
   (pluginSettings: ImagePluginSettings) =>
@@ -15,6 +19,9 @@ const imageNodeView =
     const image = document.createElement("img");
     image.className = "imagePluginImg";
     root.appendChild(image);
+    Object.keys(node.attrs).map((key) =>
+      root.setAttribute(`imageplugin-${key}`, node.attrs[key])
+    );
     const contentDOM = pluginSettings.hasTitle && document.createElement("div");
     if (contentDOM) {
       contentDOM.className = "imagePluginContent";
@@ -49,11 +56,37 @@ const imageNodeView =
     image.alt = node.attrs.alt;
     if (pluginSettings.downloadImage) {
       if (pluginSettings.downloadPlaceholder)
+        // If resize is enabled then set placeholder size to image size ( if there's image size already )
+        // If resize is enabled then maybe set width and height props on image when it's inserted into the doc?
         image.src = pluginSettings.downloadPlaceholder;
       pluginSettings.downloadImage(node.attrs.src).then((src) => {
+        // If resize is enabled then get image size, then load the image, set size
         image.src = src;
       });
     } else {
+      // If resize is enabled then get image size, then load the image, set size
+      if (pluginSettings.enableResize) {
+        getImageDimensions(node.attrs.src).then((dimensions) => {
+          const maxWidth = getMaxWidth(root);
+          const finalDimensions = calculateImageDimensions(
+            maxWidth,
+            maxWidth,
+            dimensions.width,
+            dimensions.height,
+            dimensions.completed,
+            node.attrs.width,
+            node.attrs.height
+          );
+          image.style.height = `${finalDimensions.height}px`;
+          image.style.width = `${finalDimensions.width}px`;
+          // Attach resize controls
+          const resizeControls = createResizeControls(
+            finalDimensions.height,
+            finalDimensions.width
+          );
+          root.appendChild(resizeControls);
+        });
+      }
       image.src = node.attrs.src;
     }
 
@@ -79,7 +112,7 @@ const imageNodeView =
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
         updateDOM(updateNode);
-        return false;
+        return true;
       },
       ignoreMutation: () => true,
       destroy: () => {

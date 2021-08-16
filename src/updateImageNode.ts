@@ -23,9 +23,10 @@ const updateImageNode = (
     attrs: {
       src: { default: null },
       alt: { default: null },
+      height: { default: null },
+      width: { default: null },
       ...attributesUpdate,
     },
-    group: "block",
     atom: true,
     ...(pluginSettings.isBlock
       ? { group: "block" }
