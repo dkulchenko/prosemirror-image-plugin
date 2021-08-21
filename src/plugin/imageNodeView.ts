@@ -1,7 +1,7 @@
 import { TextSelection } from "prosemirror-state";
 import { Node } from "prosemirror-model";
 import { EditorView, NodeView } from "prosemirror-view";
-import { ImagePluginSettings } from "../types";
+import { imagePluginClassNames, ImagePluginSettings } from "../types";
 import createResizeControls from "./resize/createResizeControls";
 import getImageDimensions from "./resize/getImageDimensions";
 import getMaxWidth from "./resize/getMaxWidth";
@@ -64,38 +64,59 @@ const imageNodeView =
         image.src = src;
       });
     } else {
-      // If resize is enabled then get image size, then load the image, set size
-      if (pluginSettings.enableResize) {
-        getImageDimensions(node.attrs.src).then((dimensions) => {
-          const maxWidth = getMaxWidth(root);
-          const finalDimensions = calculateImageDimensions(
-            maxWidth,
-            maxWidth,
-            dimensions.width,
-            dimensions.height,
-            dimensions.completed,
-            node.attrs.width,
-            node.attrs.height
-          );
-          image.style.height = `${finalDimensions.height}px`;
-          image.style.width = `${finalDimensions.width}px`;
-          // Attach resize controls
-          const resizeControls = createResizeControls(
-            finalDimensions.height,
-            finalDimensions.width
-          );
-          root.appendChild(resizeControls);
-        });
-      }
-      image.src = node.attrs.src;
     }
-
-    const updateDOM = (updatedNode: Node) => {
+    let resizeControls: HTMLDivElement | undefined = undefined;
+    const updateDOM = (
+      updatedNode: Node,
+      oldResizeControls: HTMLDivElement | undefined
+    ) => {
+      console.log({oldResizeControls})
+      if (oldResizeControls) {
+        console.log("asd");
+        oldResizeControls.remove();
+      }
       Object.keys(updatedNode.attrs).map((attr) =>
         root.setAttribute(`imageplugin-${attr}`, updatedNode.attrs[attr])
       );
+      if (!pluginSettings.downloadImage) {
+        // If resize is enabled then get image size, then load the image, set size
+        if (pluginSettings.enableResize) {
+          getImageDimensions(updatedNode.attrs.src).then((dimensions) => {
+            const maxWidth = getMaxWidth(root);
+            const finalDimensions = calculateImageDimensions(
+              maxWidth,
+              maxWidth,
+              dimensions.width,
+              dimensions.height,
+              dimensions.completed,
+              updatedNode.attrs.width,
+              updatedNode.attrs.height
+            );
+            image.style.height = `${finalDimensions.height}px`;
+            image.style.width = `${finalDimensions.width}px`;
+            // Attach resize controls
+            const oldResizeControls = root.querySelector(
+              `.imageResizeBoxWrapper`
+            );
+            console.log({ oldResizeControls, root });
+            if (oldResizeControls) {
+              console.log("remove!");
+              oldResizeControls.remove();
+            }
+            resizeControls = createResizeControls(
+              finalDimensions.height,
+              finalDimensions.width,
+              getPos,
+              updatedNode,
+              view
+            );
+            root.appendChild(resizeControls);
+          });
+        }
+        image.src = updatedNode.attrs.src;
+      }
     };
-    updateDOM(node);
+    updateDOM(node, resizeControls);
 
     return {
       ...(contentDOM
@@ -111,7 +132,8 @@ const imageNodeView =
         if (updateNode.type.name !== "image") return false;
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
-        updateDOM(updateNode);
+        // maybe requestanimationframe here?
+        updateDOM(updateNode, resizeControls);
         return true;
       },
       ignoreMutation: () => true,

@@ -63,6 +63,8 @@ export enum resizeDirection {
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export enum imagePluginClassNames {
+  imageResizeBoxWrapper = "imageResizeBoxWrapper",
+  imageResizeBoxCenter = "imageResizeBoxCenter",
   imageResizeBox = "imageResizeBox",
   imageResizeBoxControl = "imageResizeBoxControl",
   imageResizeBoxImage = "imageResizeBoxImage",

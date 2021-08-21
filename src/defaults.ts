@@ -88,7 +88,7 @@ export const defaultSettings: ImagePluginSettings = {
   updateOverlay: defaultUpdateOverlay,
   defaultTitle: "Image title",
   defaultAlt: "Image",
-  // enableResize: true,
-  // maxImageSize: 10000,
+  enableResize: true,
+  maxImageSize: 10000,
   isBlock: true,
 };
