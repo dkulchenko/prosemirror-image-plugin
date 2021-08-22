@@ -15,9 +15,9 @@ const imageNodeView =
     getPos: (() => number) | boolean
   ): NodeView => {
     const root = document.createElement("div");
-    root.className = "imagePluginRoot";
+    root.className = imagePluginClassNames.imagePluginRoot;
     const image = document.createElement("img");
-    image.className = "imagePluginImg";
+    image.className = imagePluginClassNames.imagePluginImg;
     root.appendChild(image);
     Object.keys(node.attrs).map((key) =>
       root.setAttribute(`imageplugin-${key}`, node.attrs[key])
@@ -52,6 +52,8 @@ const imageNodeView =
       pluginSettings.updateOverlay(overlay, getPos, view, node);
     }
 
+    // - cache promises, do sync stuff if they're cached
+    // - re-draw the whole thing with updateDOM
     // Handle image
     image.alt = node.attrs.alt;
     if (pluginSettings.downloadImage) {
@@ -65,16 +67,11 @@ const imageNodeView =
       });
     } else {
     }
-    let resizeControls: HTMLDivElement | undefined = undefined;
+    let resizeControls: HTMLDivElement | undefined;
     const updateDOM = (
       updatedNode: Node,
       oldResizeControls: HTMLDivElement | undefined
     ) => {
-      console.log({oldResizeControls})
-      if (oldResizeControls) {
-        console.log("asd");
-        oldResizeControls.remove();
-      }
       Object.keys(updatedNode.attrs).map((attr) =>
         root.setAttribute(`imageplugin-${attr}`, updatedNode.attrs[attr])
       );
@@ -95,22 +92,18 @@ const imageNodeView =
             image.style.height = `${finalDimensions.height}px`;
             image.style.width = `${finalDimensions.width}px`;
             // Attach resize controls
-            const oldResizeControls = root.querySelector(
-              `.imageResizeBoxWrapper`
-            );
-            console.log({ oldResizeControls, root });
-            if (oldResizeControls) {
-              console.log("remove!");
-              oldResizeControls.remove();
+            if (!oldResizeControls) {
+              resizeControls = createResizeControls(
+                finalDimensions.height,
+                finalDimensions.width,
+                getPos,
+                updatedNode,
+                view
+              );
+              root.appendChild(resizeControls);
+            } else {
+              console.log({ oldResizeControls });
             }
-            resizeControls = createResizeControls(
-              finalDimensions.height,
-              finalDimensions.width,
-              getPos,
-              updatedNode,
-              view
-            );
-            root.appendChild(resizeControls);
           });
         }
         image.src = updatedNode.attrs.src;
@@ -129,7 +122,9 @@ const imageNodeView =
         : {}),
       dom: root,
       update: (updateNode: Node) => {
-        if (updateNode.type.name !== "image") return false;
+        if (updateNode.type.name !== "image") {
+          return false;
+        }
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
         // maybe requestanimationframe here?
@@ -138,6 +133,7 @@ const imageNodeView =
       },
       ignoreMutation: () => true,
       destroy: () => {
+        console.log("destroy");
         pluginSettings.deleteSrc(node.attrs.src);
       },
     };

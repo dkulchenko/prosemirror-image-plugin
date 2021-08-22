@@ -68,4 +68,6 @@ export enum imagePluginClassNames {
   imageResizeBox = "imageResizeBox",
   imageResizeBoxControl = "imageResizeBoxControl",
   imageResizeBoxImage = "imageResizeBoxImage",
+  imagePluginRoot = "imagePluginRoot",
+  imagePluginImg = "imagePluginImg"
 }

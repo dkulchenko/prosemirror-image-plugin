@@ -94,9 +94,8 @@ const createMouseDownHandler =
           height: wrapper.clientHeight,
           // TODO: save body width
         };
-        let { tr } = view.state;
         const { selection } = view.state;
-        tr = tr.setNodeMarkup(pos, undefined, attrs);
+        const tr = view.state.tr.setNodeMarkup(pos, undefined, attrs);
         console.log("whaddup");
         // tr = tr.setSelection(selection);
         view.dispatch(tr);
