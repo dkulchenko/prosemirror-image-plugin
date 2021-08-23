@@ -91,19 +91,17 @@ const imageNodeView =
             );
             image.style.height = `${finalDimensions.height}px`;
             image.style.width = `${finalDimensions.width}px`;
-            // Attach resize controls
-            if (!oldResizeControls) {
-              resizeControls = createResizeControls(
-                finalDimensions.height,
-                finalDimensions.width,
-                getPos,
-                updatedNode,
-                view
-              );
-              root.appendChild(resizeControls);
-            } else {
-              console.log({ oldResizeControls });
+            if (resizeControls) {
+              resizeControls.remove();
             }
+            resizeControls = createResizeControls(
+              finalDimensions.height,
+              finalDimensions.width,
+              getPos,
+              updatedNode,
+              view
+            );
+            root.appendChild(resizeControls);
           });
         }
         image.src = updatedNode.attrs.src;

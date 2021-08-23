@@ -35,7 +35,7 @@ const resizeFunctions: {
   [resizeDirection.bottom]: setHeight,
   [resizeDirection.bottomLeft]: setSize,
 };
-
+let cntr = 0;
 const createMouseDownHandler =
   (
     direction: resizeDirection,
@@ -88,8 +88,13 @@ const createMouseDownHandler =
         const pos = getPos();
         if (!pos) return;
         // TODO: Check why this runs multiple times...
+        const currentNode = view.state.doc.nodeAt(getPos());
+        if (currentNode?.type.name !== "image") {
+          console.log("not image");
+          return;
+        }
         const attrs = {
-          ...node.attrs,
+          ...currentNode.attrs,
           width: wrapper.clientWidth,
           height: wrapper.clientHeight,
           // TODO: save body width
@@ -136,6 +141,7 @@ export default (
 ) => {
   console.log({ height, width });
   const controlsWrapper = document.createElement("div");
+  controlsWrapper.setAttribute("data-cntr", (cntr++).toString())
   controlsWrapper.className = imagePluginClassNames.imageResizeBoxWrapper;
   const centeredWrapper = document.createElement("div");
   controlsWrapper.appendChild(centeredWrapper);
@@ -146,7 +152,7 @@ export default (
   centeredWrapper.appendChild(controlsRoot);
   controlsRoot.className = imagePluginClassNames.imageResizeBox;
   controlsRoot.style.height = `${height}px`;
-  controlsRoot.style.width = `${height}px`;
+  controlsRoot.style.width = `${width}px`;
   (Object.keys(resizeDirection) as Array<keyof typeof resizeDirection>).map(
     (direction) =>
       createResizeControl(
