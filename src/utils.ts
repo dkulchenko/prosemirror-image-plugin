@@ -102,3 +102,6 @@ export const generateChangeAlignment =
     });
     view.dispatch(t);
   };
+
+export const clamp = (min: number, value: number, max: number) =>
+  Math.max(Math.min(max, value), min);

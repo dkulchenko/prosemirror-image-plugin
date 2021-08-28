@@ -25,6 +25,7 @@ const updateImageNode = (
       alt: { default: null },
       height: { default: null },
       width: { default: null },
+      maxWidth: { default: null },
       ...attributesUpdate,
     },
     atom: true,

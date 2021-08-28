@@ -1,6 +1,10 @@
 import { Node } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
-import { imagePluginClassNames, resizeDirection } from "../../types";
+import {
+  imagePluginClassNames,
+  ImagePluginSettings,
+  resizeDirection,
+} from "../../types";
 import { resizeFunctions, setSize } from "./utils";
 
 const createMouseDownHandler =
@@ -12,7 +16,9 @@ const createMouseDownHandler =
     node: Node,
     view: EditorView,
     image: HTMLImageElement,
-    setResizeActive: (value: boolean) => void
+    setResizeActive: (value: boolean) => void,
+    maxWidth: number,
+    pluginSettings: ImagePluginSettings
   ) =>
   (event: MouseEvent) => {
     event.preventDefault();
@@ -29,10 +35,16 @@ const createMouseDownHandler =
       ev.preventDefault();
       ev.stopPropagation();
       const updateImageSize = () => {
-        const dx = (originX - ev.clientX) * (/left/i.test(direction) ? 1 : -1);
-        const dy = (originY - ev.clientY) * (/top/i.test(direction) ? 1 : -1);
-        // TODO: Clamp..
-        let widthUpdate = Math.round(initialWidth + dx);
+        const dx =
+          (originX - ev.clientX) *
+          (/left/i.test(direction) ? 1 : -1) *
+          (node.attrs.align === "center" ? 2 : 1);
+        const dy =
+          (originY - ev.clientY) *
+          (/top/i.test(direction) ? 1 : -1) *
+          (node.attrs.align === "center" ? 2 : 1);
+        // TODO: Clamp.., get maxwidth!
+        let widthUpdate = Math.min(maxWidth, Math.round(initialWidth + dx));
         let heightUpdate = Math.round(initialHeight + dy);
         const resizeFunction = resizeFunctions[direction];
         if (resizeFunction === setSize) {
@@ -41,7 +53,10 @@ const createMouseDownHandler =
           widthUpdate = heightUpdate * aspectRatio;
         }
         // TODO: Clamp, aspect ratio check!
+        const parent = wrapper.parentElement;
+        if (!parent) return;
         resizeFunction(image, widthUpdate, heightUpdate);
+        resizeFunction(parent, widthUpdate, heightUpdate);
         resizeFunction(wrapper, widthUpdate, heightUpdate);
       };
       requestAnimationFrame(updateImageSize);
@@ -66,11 +81,9 @@ const createMouseDownHandler =
           ...currentNode.attrs,
           width: wrapper.clientWidth,
           height: wrapper.clientHeight,
-          // TODO: save body width
+          maxWidth: maxWidth
         };
-        const { selection } = view.state;
         const tr = view.state.tr.setNodeMarkup(pos, undefined, attrs);
-        // tr = tr.setSelection(selection);
         view.dispatch(tr);
       },
       { once: true }
@@ -84,7 +97,9 @@ const createResizeControl = (
   node: Node,
   view: EditorView,
   image: HTMLImageElement,
-  setResizeActive: (value: boolean) => void
+  setResizeActive: (value: boolean) => void,
+  maxWidth: number,
+  pluginSettings: ImagePluginSettings
 ) => {
   const resizeControl = document.createElement("span");
   resizeControl.className = `${imagePluginClassNames.imageResizeBoxControl} ${direction}`;
@@ -98,7 +113,9 @@ const createResizeControl = (
       node,
       view,
       image,
-      setResizeActive
+      setResizeActive,
+      maxWidth,
+      pluginSettings
     )
   );
   wrapper.appendChild(resizeControl);
@@ -111,7 +128,9 @@ export default (
   node: Node,
   view: EditorView,
   image: HTMLImageElement,
-  setResizeActive: (value: boolean) => void
+  setResizeActive: (value: boolean) => void,
+  maxWidth: number,
+  pluginSettings: ImagePluginSettings
 ) => {
   const controlsWrapper = document.createElement("div");
   controlsWrapper.className = imagePluginClassNames.imageResizeBoxWrapper;
@@ -134,7 +153,9 @@ export default (
         node,
         view,
         image,
-        setResizeActive
+        setResizeActive,
+        maxWidth,
+        pluginSettings
       )
   );
   return controlsWrapper;

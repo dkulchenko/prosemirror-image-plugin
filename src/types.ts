@@ -40,8 +40,9 @@ export interface ImagePluginSettings {
   isBlock: boolean;
   resizeCallback: (el: Element, updateCallback: () => void) => () => void;
   imageMargin: number;
-  minSize: 50;
-  maxSize: 10000;
+  minSize: number;
+  maxSize: number;
+  scaleImage: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -70,7 +71,6 @@ export enum imagePluginClassNames {
   imageResizeBoxCenter = "imageResizeBoxCenter",
   imageResizeBox = "imageResizeBox",
   imageResizeBoxControl = "imageResizeBoxControl",
-  imageResizeBoxImage = "imageResizeBoxImage",
   imagePluginRoot = "imagePluginRoot",
   imagePluginImg = "imagePluginImg",
 }

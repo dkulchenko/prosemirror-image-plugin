@@ -1,15 +1,21 @@
+import { ImagePluginSettings } from "../../types";
+
 export default (
   maxWidth: number,
   containerWidth: number,
   sourceWidth: number,
   sourceHeight: number,
+  pluginSettings: ImagePluginSettings,
   nodeWidth?: number,
-  nodeHeight?: number
+  nodeHeight?: number,
+  nodeMaxWidth?: number
 ): { width: number; height: number } => {
   const aspectRatio =
     sourceWidth && sourceHeight ? sourceWidth / sourceHeight : 1;
-  let width = nodeWidth;
-  let height = nodeHeight;
+  const scale =
+    pluginSettings.scaleImage && nodeMaxWidth ? maxWidth / nodeMaxWidth : null;
+  let width = scale && nodeWidth ? nodeWidth * scale : nodeWidth;
+  let height = scale && nodeHeight ? nodeHeight * scale : nodeHeight;
   if (width && !height) {
     height = width / aspectRatio;
   } else if (height && !width) {
@@ -26,8 +32,10 @@ export default (
   }
   return {
     // TODO: Fix type
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     width,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     height,
   };

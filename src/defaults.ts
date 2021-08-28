@@ -106,5 +106,6 @@ export const defaultSettings: ImagePluginSettings = {
   resizeCallback: defaultResizeCallback,
   imageMargin: 50,
   minSize: 50,
-  maxSize: 10000,
+  maxSize: 2000,
+  scaleImage: true,
 };

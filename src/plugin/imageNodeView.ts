@@ -26,6 +26,7 @@ const getSrc = async (
           maxWidth,
           node.attrs.width,
           node.attrs.height,
+          pluginSettings,
           node.attrs.width,
           node.attrs.height
         );
@@ -55,7 +56,9 @@ const imageNodeView =
     const image = document.createElement("img");
     image.className = imagePluginClassNames.imagePluginImg;
     let resizeActive = false;
-    const setResizeActive = (value: boolean)=> {resizeActive = value}
+    const setResizeActive = (value: boolean) => {
+      resizeActive = value;
+    };
     root.appendChild(image);
     let dimensions:
       | { width: number; height: number; completed: boolean }
@@ -103,7 +106,7 @@ const imageNodeView =
     let resizeControls: HTMLDivElement | undefined;
     const updateDOM = () => {
       console.log("updateDOM");
-      if(resizeActive) return;
+      if (resizeActive) return;
       if (typeof getPos !== "function" || !dimensions) return;
       const pos = getPos();
       const updatedNode = view.state.doc.nodeAt(pos);
@@ -118,8 +121,10 @@ const imageNodeView =
           maxWidth,
           dimensions.width,
           dimensions.height,
+          pluginSettings,
           updatedNode.attrs.width,
-          updatedNode.attrs.height
+          updatedNode.attrs.height,
+          updatedNode.attrs.maxWidth
         );
         image.style.height = `${finalDimensions.height}px`;
         image.style.width = `${finalDimensions.width}px`;
@@ -133,7 +138,9 @@ const imageNodeView =
           updatedNode,
           view,
           image,
-            setResizeActive
+          setResizeActive,
+          maxWidth,
+          pluginSettings
         );
         root.appendChild(resizeControls);
       }
