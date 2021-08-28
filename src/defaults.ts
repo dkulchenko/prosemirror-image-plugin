@@ -79,6 +79,19 @@ export const defaultUpdateOverlay = (
   }
 };
 
+export const defaultResizeCallback = (
+  el: Element,
+  updateCallback: () => void
+) => {
+  const editorRoot = document.querySelector(".ProseMirror");
+  const observer = new ResizeObserver(() => updateCallback());
+  observer.observe(el);
+  return () => {
+    observer.unobserve(el);
+    if (editorRoot) observer.unobserve(editorRoot);
+  };
+};
+
 export const defaultSettings: ImagePluginSettings = {
   uploadFile: defaultUploadFile,
   hasTitle: true,
@@ -89,6 +102,9 @@ export const defaultSettings: ImagePluginSettings = {
   defaultTitle: "Image title",
   defaultAlt: "Image",
   enableResize: true,
-  maxImageSize: 10000,
   isBlock: true,
+  resizeCallback: defaultResizeCallback,
+  imageMargin: 50,
+  minSize: 50,
+  maxSize: 10000,
 };

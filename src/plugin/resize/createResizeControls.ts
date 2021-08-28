@@ -1,41 +1,8 @@
 import { Node } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
 import { imagePluginClassNames, resizeDirection } from "../../types";
+import { resizeFunctions, setSize } from "./utils";
 
-const setHeight = (element: HTMLDivElement, width: number, height: number) => {
-  // eslint-disable-next-line no-param-reassign
-  element.style.height = `${height}px`;
-};
-
-const setWidth = (element: HTMLDivElement, width: number, height: number) => {
-  // eslint-disable-next-line no-param-reassign
-  element.style.width = `${width}px`;
-};
-
-const setSize = (element: HTMLDivElement, width: number, height: number) => {
-  // eslint-disable-next-line no-param-reassign
-  element.style.height = `${height}px`;
-  // eslint-disable-next-line no-param-reassign
-  element.style.width = `${width}px`;
-};
-
-const resizeFunctions: {
-  [direction in resizeDirection]: (
-    element: HTMLDivElement,
-    width: number,
-    height: number
-  ) => void;
-} = {
-  [resizeDirection.left]: setWidth,
-  [resizeDirection.topLeft]: setSize,
-  [resizeDirection.top]: setHeight,
-  [resizeDirection.topRight]: setSize,
-  [resizeDirection.right]: setWidth,
-  [resizeDirection.bottomRight]: setSize,
-  [resizeDirection.bottom]: setHeight,
-  [resizeDirection.bottomLeft]: setSize,
-};
-let cntr = 0;
 const createMouseDownHandler =
   (
     direction: resizeDirection,
@@ -43,11 +10,14 @@ const createMouseDownHandler =
     resizeControl: HTMLSpanElement,
     getPos: boolean | (() => number),
     node: Node,
-    view: EditorView
+    view: EditorView,
+    image: HTMLImageElement,
+    setResizeActive: (value: boolean) => void
   ) =>
   (event: MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    setResizeActive(true);
     wrapper.classList.add(direction);
     // TODO: end!! remove listeners etc.
     const originX = event.clientX;
@@ -71,6 +41,7 @@ const createMouseDownHandler =
           widthUpdate = heightUpdate * aspectRatio;
         }
         // TODO: Clamp, aspect ratio check!
+        resizeFunction(image, widthUpdate, heightUpdate);
         resizeFunction(wrapper, widthUpdate, heightUpdate);
       };
       requestAnimationFrame(updateImageSize);
@@ -81,16 +52,14 @@ const createMouseDownHandler =
       (ev) => {
         ev.preventDefault();
         ev.stopPropagation();
+        setResizeActive(false);
         document.removeEventListener("mousemove", mouseMoveListener);
         wrapper.classList.remove(direction);
-        console.log("mouseUp");
         if (typeof getPos !== "function") return;
         const pos = getPos();
         if (!pos) return;
-        // TODO: Check why this runs multiple times...
         const currentNode = view.state.doc.nodeAt(getPos());
         if (currentNode?.type.name !== "image") {
-          console.log("not image");
           return;
         }
         const attrs = {
@@ -101,7 +70,6 @@ const createMouseDownHandler =
         };
         const { selection } = view.state;
         const tr = view.state.tr.setNodeMarkup(pos, undefined, attrs);
-        console.log("whaddup");
         // tr = tr.setSelection(selection);
         view.dispatch(tr);
       },
@@ -114,7 +82,9 @@ const createResizeControl = (
   direction: resizeDirection,
   getPos: boolean | (() => number),
   node: Node,
-  view: EditorView
+  view: EditorView,
+  image: HTMLImageElement,
+  setResizeActive: (value: boolean) => void
 ) => {
   const resizeControl = document.createElement("span");
   resizeControl.className = `${imagePluginClassNames.imageResizeBoxControl} ${direction}`;
@@ -126,7 +96,9 @@ const createResizeControl = (
       resizeControl,
       getPos,
       node,
-      view
+      view,
+      image,
+      setResizeActive
     )
   );
   wrapper.appendChild(resizeControl);
@@ -137,11 +109,11 @@ export default (
   width: number,
   getPos: boolean | (() => number),
   node: Node,
-  view: EditorView
+  view: EditorView,
+  image: HTMLImageElement,
+  setResizeActive: (value: boolean) => void
 ) => {
-  console.log({ height, width });
   const controlsWrapper = document.createElement("div");
-  controlsWrapper.setAttribute("data-cntr", (cntr++).toString())
   controlsWrapper.className = imagePluginClassNames.imageResizeBoxWrapper;
   const centeredWrapper = document.createElement("div");
   controlsWrapper.appendChild(centeredWrapper);
@@ -160,7 +132,9 @@ export default (
         resizeDirection[direction],
         getPos,
         node,
-        view
+        view,
+        image,
+        setResizeActive
       )
   );
   return controlsWrapper;

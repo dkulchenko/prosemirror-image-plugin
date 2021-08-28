@@ -7,6 +7,41 @@ import getImageDimensions from "./resize/getImageDimensions";
 import getMaxWidth from "./resize/getMaxWidth";
 import calculateImageDimensions from "./resize/calculateImageDimensions";
 
+const getSrc = async (
+  image: HTMLImageElement,
+  pluginSettings: ImagePluginSettings,
+  node: Node,
+  root: Element
+): Promise<string> => {
+  if (pluginSettings.downloadImage) {
+    if (pluginSettings.downloadPlaceholder) {
+      if (
+        pluginSettings.enableResize &&
+        node.attrs.width &&
+        node.attrs.height
+      ) {
+        const maxWidth = getMaxWidth(root, pluginSettings);
+        const finalDimensions = calculateImageDimensions(
+          maxWidth,
+          maxWidth,
+          node.attrs.width,
+          node.attrs.height,
+          node.attrs.width,
+          node.attrs.height
+        );
+        // eslint-disable-next-line no-param-reassign
+        image.style.height = `${finalDimensions.height}`;
+        // eslint-disable-next-line no-param-reassign
+        image.style.width = `${finalDimensions.width}`;
+      }
+      // eslint-disable-next-line no-param-reassign
+      image.src = pluginSettings.downloadPlaceholder;
+    }
+    return pluginSettings.downloadImage(node.attrs.src);
+  }
+  return node.attrs.src;
+};
+
 const imageNodeView =
   (pluginSettings: ImagePluginSettings) =>
   (
@@ -14,11 +49,17 @@ const imageNodeView =
     view: EditorView,
     getPos: (() => number) | boolean
   ): NodeView => {
+    let finalSrc: string | undefined;
     const root = document.createElement("div");
     root.className = imagePluginClassNames.imagePluginRoot;
     const image = document.createElement("img");
     image.className = imagePluginClassNames.imagePluginImg;
+    let resizeActive = false;
+    const setResizeActive = (value: boolean)=> {resizeActive = value}
     root.appendChild(image);
+    let dimensions:
+      | { width: number; height: number; completed: boolean }
+      | undefined;
     Object.keys(node.attrs).map((key) =>
       root.setAttribute(`imageplugin-${key}`, node.attrs[key])
     );
@@ -56,58 +97,62 @@ const imageNodeView =
     // - re-draw the whole thing with updateDOM
     // Handle image
     image.alt = node.attrs.alt;
-    if (pluginSettings.downloadImage) {
-      if (pluginSettings.downloadPlaceholder)
-        // If resize is enabled then set placeholder size to image size ( if there's image size already )
-        // If resize is enabled then maybe set width and height props on image when it's inserted into the doc?
-        image.src = pluginSettings.downloadPlaceholder;
-      pluginSettings.downloadImage(node.attrs.src).then((src) => {
-        // If resize is enabled then get image size, then load the image, set size
-        image.src = src;
-      });
-    } else {
-    }
+
+    // If resize is enabled then set placeholder size to image size ( if there's image size already )
+    // If resize is enabled then maybe set width and height props on image when it's inserted into the doc?
     let resizeControls: HTMLDivElement | undefined;
-    const updateDOM = (
-      updatedNode: Node,
-      oldResizeControls: HTMLDivElement | undefined
-    ) => {
+    const updateDOM = () => {
+      console.log("updateDOM");
+      if(resizeActive) return;
+      if (typeof getPos !== "function" || !dimensions) return;
+      const pos = getPos();
+      const updatedNode = view.state.doc.nodeAt(pos);
+      if (!updatedNode) return;
       Object.keys(updatedNode.attrs).map((attr) =>
         root.setAttribute(`imageplugin-${attr}`, updatedNode.attrs[attr])
       );
-      if (!pluginSettings.downloadImage) {
-        // If resize is enabled then get image size, then load the image, set size
-        if (pluginSettings.enableResize) {
-          getImageDimensions(updatedNode.attrs.src).then((dimensions) => {
-            const maxWidth = getMaxWidth(root);
-            const finalDimensions = calculateImageDimensions(
-              maxWidth,
-              maxWidth,
-              dimensions.width,
-              dimensions.height,
-              dimensions.completed,
-              updatedNode.attrs.width,
-              updatedNode.attrs.height
-            );
-            image.style.height = `${finalDimensions.height}px`;
-            image.style.width = `${finalDimensions.width}px`;
-            if (resizeControls) {
-              resizeControls.remove();
-            }
-            resizeControls = createResizeControls(
-              finalDimensions.height,
-              finalDimensions.width,
-              getPos,
-              updatedNode,
-              view
-            );
-            root.appendChild(resizeControls);
-          });
+      if (pluginSettings.enableResize) {
+        const maxWidth = getMaxWidth(root, pluginSettings);
+        const finalDimensions = calculateImageDimensions(
+          maxWidth,
+          maxWidth,
+          dimensions.width,
+          dimensions.height,
+          updatedNode.attrs.width,
+          updatedNode.attrs.height
+        );
+        image.style.height = `${finalDimensions.height}px`;
+        image.style.width = `${finalDimensions.width}px`;
+        if (resizeControls) {
+          resizeControls.remove();
         }
-        image.src = updatedNode.attrs.src;
+        resizeControls = createResizeControls(
+          finalDimensions.height,
+          finalDimensions.width,
+          getPos,
+          updatedNode,
+          view,
+          image,
+            setResizeActive
+        );
+        root.appendChild(resizeControls);
       }
     };
-    updateDOM(node, resizeControls);
+    let unsubscribeResizeObserver: (() => void) | undefined;
+    (async () => {
+      finalSrc = await getSrc(image, pluginSettings, node, root);
+      if (pluginSettings.enableResize) {
+        dimensions = await getImageDimensions(finalSrc);
+      }
+      image.src = finalSrc;
+      updateDOM();
+      const parent = root.parentElement;
+      if (!parent || !pluginSettings.enableResize) return;
+      unsubscribeResizeObserver = pluginSettings.resizeCallback(
+        parent,
+        updateDOM
+      );
+    })();
 
     return {
       ...(contentDOM
@@ -120,18 +165,17 @@ const imageNodeView =
         : {}),
       dom: root,
       update: (updateNode: Node) => {
-        if (updateNode.type.name !== "image") {
+        if (updateNode.type.name !== "image" || !finalSrc) {
           return false;
         }
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
-        // maybe requestanimationframe here?
-        updateDOM(updateNode, resizeControls);
+        updateDOM();
         return true;
       },
       ignoreMutation: () => true,
       destroy: () => {
-        console.log("destroy");
+        unsubscribeResizeObserver?.();
         pluginSettings.deleteSrc(node.attrs.src);
       },
     };

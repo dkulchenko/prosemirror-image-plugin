@@ -3,12 +3,11 @@ export default (
   containerWidth: number,
   sourceWidth: number,
   sourceHeight: number,
-  completed: boolean,
   nodeWidth?: number,
   nodeHeight?: number
 ): { width: number; height: number } => {
   const aspectRatio =
-    completed && sourceWidth && sourceHeight ? sourceWidth / sourceHeight : 1;
+    sourceWidth && sourceHeight ? sourceWidth / sourceHeight : 1;
   let width = nodeWidth;
   let height = nodeHeight;
   if (width && !height) {

@@ -1,18 +1,14 @@
-export default (
-  el: Node,
-  imageMargin = 50,
-  minSize = 50,
-  maxSize = 10000
-): number => {
-  // Ideally, the image should not be wider then its containing element.
+import { ImagePluginSettings } from "../../types";
+
+export default (el: Node, pluginSettings: ImagePluginSettings): number => {
+  const { imageMargin, minSize, maxSize } = pluginSettings;
   let node = el.parentElement;
 
   while (node && !node.offsetParent) {
     node = node.parentElement;
   }
-  // @ts-ignore
-  if (node?.offsetParent && node?.offsetParent?.offsetWidth > 0) {
-    const { offsetParent } = node;
+  const offsetParent = node?.offsetParent;
+  if (offsetParent instanceof HTMLElement && offsetParent?.offsetWidth > 0) {
     const style =
       el?.ownerDocument?.defaultView?.getComputedStyle(offsetParent);
     let width = offsetParent.clientWidth - imageMargin * 2;
