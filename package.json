@@ -67,6 +67,7 @@
     "npm-check": "^5.9.2",
     "prettier": "^2.3.2",
     "rollup": "^2.55.0",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.30.0",
     "typescript": "^4.3.5"

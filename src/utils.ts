@@ -22,10 +22,7 @@ export const dataURIToFile = (dataURI: string, name: string) => {
   return new File([u8arr], name, { type: mime });
 };
 
-export const createPlaceholder = () => {
-  const placeholder = document.createElement("placeholder");
-  return placeholder;
-};
+export const createPlaceholder = () => document.createElement("placeholder");
 
 export const imagePluginKey = new PluginKey<ImagePluginState>("imagePlugin");
 
@@ -102,3 +99,6 @@ export const generateChangeAlignment =
     });
     view.dispatch(t);
   };
+
+export const clamp = (min: number, value: number, max: number) =>
+  Math.max(Math.min(max, value), min);
