@@ -1,6 +1,6 @@
 import { ImagePluginSettings } from "../../types";
 
-export default  (
+export default (
   maxWidth: number,
   containerWidth: number,
   sourceWidth: number,
