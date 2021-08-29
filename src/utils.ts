@@ -22,10 +22,7 @@ export const dataURIToFile = (dataURI: string, name: string) => {
   return new File([u8arr], name, { type: mime });
 };
 
-export const createPlaceholder = () => {
-  const placeholder = document.createElement("placeholder");
-  return placeholder;
-};
+export const createPlaceholder = () => document.createElement("placeholder");
 
 export const imagePluginKey = new PluginKey<ImagePluginState>("imagePlugin");
 

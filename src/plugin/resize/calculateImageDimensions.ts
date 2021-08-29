@@ -1,6 +1,6 @@
 import { ImagePluginSettings } from "../../types";
 
-export default (
+export default  (
   maxWidth: number,
   containerWidth: number,
   sourceWidth: number,
@@ -30,13 +30,10 @@ export default (
     width = containerWidth;
     height = width / aspectRatio;
   }
+  if (width === undefined || height === undefined)
+    return { height: pluginSettings.minSize, width: pluginSettings.minSize };
   return {
-    // TODO: Fix type
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     width,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     height,
   };
 };

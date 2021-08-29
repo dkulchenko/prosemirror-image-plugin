@@ -1,5 +1,6 @@
 import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
+import copy from "rollup-plugin-copy";
 
 import pkg from "./package.json";
 
@@ -14,6 +15,14 @@ export default {
     { file: pkg.module, format: "es" },
   ],
   external: [...Object.keys(pkg.dependencies || {})],
-  plugins: [typescript(), terser()],
+  plugins: [
+    copy({
+      targets: [
+        { src: "src/styles/**/*", dest: "dist/styles" },
+      ],
+    }),
+    typescript(),
+    terser(),
+  ],
   sourcemap: true,
 };

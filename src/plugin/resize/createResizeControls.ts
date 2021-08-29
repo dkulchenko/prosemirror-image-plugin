@@ -6,6 +6,7 @@ import {
   resizeDirection,
 } from "../../types";
 import { resizeFunctions, setSize } from "./utils";
+import { clamp } from "../../utils";
 
 const createMouseDownHandler =
   (
@@ -25,7 +26,7 @@ const createMouseDownHandler =
     event.stopPropagation();
     setResizeActive(true);
     wrapper.classList.add(direction);
-    // TODO: end!! remove listeners etc.
+    wrapper.classList.add("active");
     const originX = event.clientX;
     const originY = event.clientY;
     const initialWidth = wrapper.clientWidth;
@@ -43,16 +44,24 @@ const createMouseDownHandler =
           (originY - ev.clientY) *
           (/top/i.test(direction) ? 1 : -1) *
           (node.attrs.align === "center" ? 2 : 1);
-        // TODO: Clamp.., get maxwidth!
-        let widthUpdate = Math.min(maxWidth, Math.round(initialWidth + dx));
-        let heightUpdate = Math.round(initialHeight + dy);
+        let widthUpdate = clamp(
+          pluginSettings.minSize,
+          Math.round(initialWidth + dx),
+          maxWidth
+        );
+        let heightUpdate = clamp(
+          pluginSettings.minSize,
+          Math.round(initialHeight + dy),
+          pluginSettings.maxSize
+        );
         const resizeFunction = resizeFunctions[direction];
         if (resizeFunction === setSize) {
-          // TODO 1000 = minsize
-          heightUpdate = Math.max(widthUpdate / aspectRatio, 50);
+          heightUpdate = Math.max(
+            widthUpdate / aspectRatio,
+            pluginSettings.minSize
+          );
           widthUpdate = heightUpdate * aspectRatio;
         }
-        // TODO: Clamp, aspect ratio check!
         const parent = wrapper.parentElement;
         if (!parent) return;
         resizeFunction(image, widthUpdate, heightUpdate);
@@ -70,6 +79,7 @@ const createMouseDownHandler =
         setResizeActive(false);
         document.removeEventListener("mousemove", mouseMoveListener);
         wrapper.classList.remove(direction);
+        wrapper.classList.remove("active");
         if (typeof getPos !== "function") return;
         const pos = getPos();
         if (!pos) return;
@@ -81,7 +91,7 @@ const createMouseDownHandler =
           ...currentNode.attrs,
           width: wrapper.clientWidth,
           height: wrapper.clientHeight,
-          maxWidth: maxWidth
+          maxWidth,
         };
         const tr = view.state.tr.setNodeMarkup(pos, undefined, attrs);
         view.dispatch(tr);

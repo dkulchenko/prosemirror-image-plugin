@@ -31,9 +31,9 @@ const getSrc = async (
           node.attrs.height
         );
         // eslint-disable-next-line no-param-reassign
-        image.style.height = `${finalDimensions.height}`;
+        image.style.height = `${finalDimensions.height}px`;
         // eslint-disable-next-line no-param-reassign
-        image.style.width = `${finalDimensions.width}`;
+        image.style.width = `${finalDimensions.width}px`;
       }
       // eslint-disable-next-line no-param-reassign
       image.src = pluginSettings.downloadPlaceholder;
@@ -105,16 +105,19 @@ const imageNodeView =
     // If resize is enabled then maybe set width and height props on image when it's inserted into the doc?
     let resizeControls: HTMLDivElement | undefined;
     const updateDOM = () => {
-      console.log("updateDOM");
       if (resizeActive) return;
-      if (typeof getPos !== "function" || !dimensions) return;
+      if (
+        typeof getPos !== "function" ||
+        (pluginSettings.enableResize && !dimensions)
+      )
+        return;
       const pos = getPos();
       const updatedNode = view.state.doc.nodeAt(pos);
       if (!updatedNode) return;
       Object.keys(updatedNode.attrs).map((attr) =>
         root.setAttribute(`imageplugin-${attr}`, updatedNode.attrs[attr])
       );
-      if (pluginSettings.enableResize) {
+      if (pluginSettings.enableResize && dimensions) {
         const maxWidth = getMaxWidth(root, pluginSettings);
         const finalDimensions = calculateImageDimensions(
           maxWidth,
