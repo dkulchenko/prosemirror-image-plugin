@@ -7,7 +7,10 @@ export default (el: Node, pluginSettings: ImagePluginSettings): number => {
   while (node && !node.offsetParent) {
     node = node.parentElement;
   }
-  const offsetParent = node?.offsetParent;
+  // Stop at the root of the editor
+  const offsetParent = node?.classList.contains("ProseMirror")
+    ? node
+    : node?.offsetParent;
   if (offsetParent instanceof HTMLElement && offsetParent?.offsetWidth > 0) {
     const style =
       el?.ownerDocument?.defaultView?.getComputedStyle(offsetParent);
