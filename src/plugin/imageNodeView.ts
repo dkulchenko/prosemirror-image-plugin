@@ -163,7 +163,7 @@ const imageNodeView =
         updateDOM
       );
     })();
-    console.log("test")
+    console.log("test");
     return {
       ...(contentDOM
         ? {
