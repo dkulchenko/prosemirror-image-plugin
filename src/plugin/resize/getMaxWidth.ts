@@ -1,5 +1,6 @@
 import { ImagePluginSettings } from "../../types";
 
+// Get max possible size for images
 export default (el: Node, pluginSettings: ImagePluginSettings): number => {
   const { imageMargin, minSize, maxSize } = pluginSettings;
   let node = el.parentElement;

@@ -36,14 +36,18 @@ const createMouseDownHandler =
       ev.preventDefault();
       ev.stopPropagation();
       const updateImageSize = () => {
+        const doubleScale =
+          node.attrs.align === "center" &&
+          direction !== resizeDirection.top &&
+          direction !== resizeDirection.bottom;
         const dx =
           (originX - ev.clientX) *
           (/left/i.test(direction) ? 1 : -1) *
-          (node.attrs.align === "center" ? 2 : 1);
+          (doubleScale ? 2 : 1);
         const dy =
           (originY - ev.clientY) *
           (/top/i.test(direction) ? 1 : -1) *
-          (node.attrs.align === "center" ? 2 : 1);
+          (doubleScale ? 2 : 1);
         let widthUpdate = clamp(
           pluginSettings.minSize,
           Math.round(initialWidth + dx),

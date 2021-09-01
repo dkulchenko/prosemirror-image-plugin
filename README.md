@@ -13,6 +13,8 @@ Try it out at <https://emergence-engineering.com/blog/prosemirror-image-plugin>
   images when the image is removed from the document
 - Customizable overlay for alignment ( or whatever you think of! )
 - Optional image title
+- Image resizing with body resize listeners, so the image always fits the editor ( inspired by czi-prosemirror )
+- Scaling images with editor size ( when resizing is enabled )
 
 # How to use 
 
@@ -21,6 +23,10 @@ import { schema } from "prosemirror-schema-basic";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { defaultSettings, updateImageNode, imagePlugin } from "prosemirror-image-plugin";
+
+import "prosemirror-image-plugin/dist/styles/common.css";
+import "prosemirror-image-plugin/dist/styles/withResize.css";
+import "prosemirror-image-plugin/dist/styles/sideResize.css";
 
 // Update your settings here!
 const imageSettings = {...defaultSettings};
@@ -70,16 +76,23 @@ Interface for the settings used by this plugin.
 
 | name                | type                                                                                                 | description                                                                                                                   |
 | ------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| uploadFile          | (file: File) => Promise\<string>                                                                      | Uploads the image file to a remote server and returns the uploaded image URL. By default it returns the dataURI of the image. |
-| deleteSrc           | (src: string) => Promise\<void>                                                                       | Deletes the image from the server.                                                                                            |
-| hasTitle            | boolean                                                                                              | If set to `true` then the image has a title field. True by default.                                                           |
-| extraAttributes     | Record\<string, string &#124; null>                                                                   | Extra attributes on the new `image` node. By default is `defaultExtraAttributes`.                                             |
+| uploadFile          | (file: File) => Promise\<string>                                                                     | Uploads the image file to a remote server and returns the uploaded image URL. By default it returns the dataURI of the image. |
+| deleteSrc           | (src: string) => Promise\<void>                                                                      | Deletes the image from the server.                                                                                            |
+| hasTitle            | boolean                                                                                              | If set to `true` then the image has a title field. True by default. `isBlock` should be `true` if set.                        |
+| extraAttributes     | Record\<string, string &#124; null>                                                                  | Extra attributes on the new `image` node. By default is `defaultExtraAttributes`.                                             |
 | createOverlay       | ( node: PMNode, getPos: (() => number)  &#124; boolean, view: EditorView) => Node  &#124; undefined  | create an overlay DOM Node for the `image` node. The default is the one you see in the intro image.                           |
 | updateOverlay       | ( overlayRoot: Node, getPos: (() => number)  &#124; boolean, view: EditorView, node: PMNode) => void | The function that runs whenever the `image` ProseMirror node changes to update the overlay.                                   |
 | defaultTitle        | string                                                                                               | Default title on new images.                                                                                                  |
 | defaultAlt          | string                                                                                               | Default alt on new images ( when it's not defined ).                                                                          |
-| downloadImage       | (url: string) => Promise\<string>                                                                     | Download image data with a callback function. Useful for images with behind auth.                                             |
+| downloadImage       | (url: string) => Promise\<string>                                                                    | Download image data with a callback function. Useful for images with behind auth.                                             |
 | downloadPlaceholder | string                                                                                               | If `downloadImage` is defined then this image is showed while the download is in progress.                                    |
+| isBlock             | boolean                                                                                              | `true` if you want block images, `false` if you want inline ( ProseMirror default ). Titles are only possible with block images. Default `true`.  |
+| enableResize        | boolean                                                                                              |  Enables resize features. Default `true`.                                                                                     |
+| resizeCallback      | (el: Element, updateCallback: () => void) => () => void                                              | Creates & destroys resize listeners                                                                                           |
+| imageMargin         | number                                                                                               | Space in `px` on the side an image. Default 50.                                                                               |
+| minSize             | number                                                                                               | Minimum size in `px` of an image. Default 50.                                                                                 |
+| maxSize             | number                                                                                               | Maximum size in `px` of an image. Default 2000.                                                                               |
+| scaleImage          | boolean                                                                                              | If `true` then images scale proportionally with editor width. Default `true`.                                                 |
 
 ### updateImageNode
 Returns the updated nodes ( `Schema["spec"]["nodes"] type` )
@@ -162,82 +175,14 @@ The `onInputChange` callback:
   );
 ```
 
-### Example CSS
+### CSS & Styles
 
-This is an example style which gives you usable ( but not really good looking ) image nodes.
-```css
-placeholder {
-    color: #ccc;
-    position: relative;
-    top: 6px;
-  }
-  placeholder:after {
-    content: "☁";
-    font-size: 200%;
-    line-height: 0.1;
-    font-weight: bold;
-  }
-
-  .imagePluginRoot {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    border-radius: 0.25rem;
-  }
-
-  .imagePluginRoot img {
-    align-self: center;
-    width: 100%;
-  }
-
-  .imagePluginRoot[imageplugin-align="left"] {
-    width: 51%;
-    float: left;
-    margin: 1rem 2rem 0 0;
-  }
-  .imagePluginRoot[imageplugin-align="right"] {
-    width: 51%;
-    float: right;
-    margin: 0;
-  }
-  .imagePluginRoot[imageplugin-align="center"] {
-    width: 51%;
-    float: none;
-    margin: 0 auto;
-  }
-  .imagePluginRoot[imageplugin-align="fullWidth"] {
-    width: auto;
-    float: none;
-    clear: both;
-  }
-
-  .imagePluginRoot[imageplugin-align="left"] [imagealign="left"] {
-    background-color: red;
-  }
-  .imagePluginRoot[imageplugin-align="right"] [imagealign="right"] {
-    background-color: red;
-  }
-  .imagePluginRoot[imageplugin-align="center"] [imagealign="center"] {
-    background-color: red;
-  }
-  .imagePluginRoot[imageplugin-align="fullWidth"] [imagealign="fullWidth"] {
-    background-color: red;
-  }
-
-  .imagePluginRoot:hover .imagePluginOverlay {
-    opacity: 1;
-  }
-  .imagePluginOverlay {
-    width: 100%;
-    display: flex;
-    position: absolute;
-    justify-content: center;
-    transition: all 0.3s ease;
-    opacity: 0;
-  }
-  .imagePluginRoot .text {
-    text-align: center;
-  }
+The following styles are in the bundle:
+```typescript
+import "prosemirror-image-plugin/dist/styles/common.css";
+import "prosemirror-image-plugin/dist/styles/withResize.css";
+import "prosemirror-image-plugin/dist/styles/sideResize.css";
+import "prosemirror-image-plugin/dist/styles/withoutResize.css";
 ```
 
 ## Known issues
@@ -252,11 +197,6 @@ placeholder {
 2. install peer dependencies: `npm run install-peers`
 3. link local lib: `npm run link`
 4. link the package from the project you want to use it:  `npm run link prosemirror-image-plugin`
-
-### Publish the package
-```
-npm run publish:np
-```
 
 ### About us
 

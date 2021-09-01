@@ -96,13 +96,7 @@ const imageNodeView =
       pluginSettings.updateOverlay(overlay, getPos, view, node);
     }
 
-    // - cache promises, do sync stuff if they're cached
-    // - re-draw the whole thing with updateDOM
-    // Handle image
     image.alt = node.attrs.alt;
-
-    // If resize is enabled then set placeholder size to image size ( if there's image size already )
-    // If resize is enabled then maybe set width and height props on image when it's inserted into the doc?
     let resizeControls: HTMLDivElement | undefined;
     const updateDOM = () => {
       if (resizeActive) return;
@@ -163,7 +157,6 @@ const imageNodeView =
         updateDOM
       );
     })();
-    console.log("test");
     return {
       ...(contentDOM
         ? {

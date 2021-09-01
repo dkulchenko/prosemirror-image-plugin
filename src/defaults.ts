@@ -83,12 +83,10 @@ export const defaultResizeCallback = (
   el: Element,
   updateCallback: () => void
 ) => {
-  const editorRoot = document.querySelector(".ProseMirror");
   const observer = new ResizeObserver(() => updateCallback());
   observer.observe(el);
   return () => {
     observer.unobserve(el);
-    if (editorRoot) observer.unobserve(editorRoot);
   };
 };
 
