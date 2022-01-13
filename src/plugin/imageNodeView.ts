@@ -11,7 +11,8 @@ const getSrc = async (
   image: HTMLImageElement,
   pluginSettings: ImagePluginSettings,
   node: Node,
-  root: Element
+  root: Element,
+  view: EditorView
 ): Promise<string> => {
   if (pluginSettings.downloadImage) {
     if (pluginSettings.downloadPlaceholder) {
@@ -36,7 +37,7 @@ const getSrc = async (
         image.style.width = `${finalDimensions.width}px`;
       }
       // eslint-disable-next-line no-param-reassign
-      image.src = pluginSettings.downloadPlaceholder;
+      image.src = pluginSettings.downloadPlaceholder(node.attrs.src, view);
     }
     return pluginSettings.downloadImage(node.attrs.src);
   }
@@ -144,7 +145,7 @@ const imageNodeView =
     };
     let unsubscribeResizeObserver: (() => void) | undefined;
     (async () => {
-      finalSrc = await getSrc(image, pluginSettings, node, root);
+      finalSrc = await getSrc(image, pluginSettings, node, root, view);
       if (pluginSettings.enableResize) {
         dimensions = await getImageDimensions(finalSrc);
       }
