@@ -22,6 +22,9 @@ export const defaultUploadFile = (file: File): Promise<string> =>
 
 export const defaultExtraAttributes = {
   align: imageAlign.center,
+  width: null,
+  height: null,
+  maxWidth: null,
 };
 
 export const defaultCreateOverlay = (
