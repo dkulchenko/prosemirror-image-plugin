@@ -1,5 +1,6 @@
 import { DecorationSet, EditorView } from "prosemirror-view";
-import { Node as PMNode } from "prosemirror-model";
+import { Node as PMNode, Schema } from "prosemirror-model";
+import { EditorState, StateField } from "prosemirror-state";
 
 export type ImagePluginState = DecorationSet;
 
@@ -16,7 +17,7 @@ export interface RemoveImagePlaceholder {
 
 export type ImagePluginAction = InsertImagePlaceholder | RemoveImagePlaceholder;
 
-export interface ImagePluginSettings {
+export interface ImagePluginSettings<T = any> {
   downloadImage?: (url: string) => Promise<string>;
   downloadPlaceholder?: (url: string, view: EditorView) => string;
   uploadFile: (file: File) => Promise<string>;
@@ -43,6 +44,12 @@ export interface ImagePluginSettings {
   minSize: number;
   maxSize: number;
   scaleImage: boolean;
+  createState: <S extends Schema>(
+    pluginSettings: ImagePluginSettings,
+    schema: S
+  ) => StateField<T, S>;
+  createDecorations: (state: EditorState) => DecorationSet;
+  findPlaceholder: (state: EditorState, id: object) => number | undefined;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

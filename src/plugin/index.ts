@@ -1,23 +1,21 @@
 import { Schema } from "prosemirror-model";
 import { Plugin } from "prosemirror-state";
+
 import { ImagePluginSettings, ImagePluginState } from "../types";
 import { imagePluginKey } from "../utils";
-import imageNodeView from "./imageNodeView";
-import createState from "./createState";
-import pasteHandler from "./pasteHandler";
 import dropHandler from "./dropHandler";
+import imageNodeView from "./imageNodeView";
+import pasteHandler from "./pasteHandler";
 
 const imagePlugin = <T extends Schema>(
   schema: T,
   pluginSettings: ImagePluginSettings
-): Plugin<ImagePluginState, T> => {
-  return new Plugin({
+): Plugin<ImagePluginState, T> =>
+  new Plugin({
     key: imagePluginKey,
-    state: createState(pluginSettings, schema),
+    state: pluginSettings.createState(pluginSettings, schema),
     props: {
-      decorations(state) {
-        return imagePluginKey.getState(state);
-      },
+      decorations: pluginSettings.createDecorations,
       handleDOMEvents: {
         paste: pasteHandler(pluginSettings, schema),
         drop: dropHandler(pluginSettings, schema),
@@ -27,6 +25,5 @@ const imagePlugin = <T extends Schema>(
       },
     },
   });
-};
 
 export default imagePlugin;

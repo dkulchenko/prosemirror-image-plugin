@@ -76,7 +76,7 @@ const view: EditorView = new EditorView(document.getElementById("editor"), {
 Interface for the settings used by this plugin.
 
 | name                | type                                                                                                 | description                                                                                                                                      |
-| ------------------- |------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+|---------------------|------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | uploadFile          | (file: File) => Promise\<string>                                                                     | Uploads the image file to a remote server and returns the uploaded image URL. By default it returns the dataURI of the image.                    |
 | deleteSrc           | (src: string) => Promise\<void>                                                                      | Deletes the image from the server.                                                                                                               |
 | hasTitle            | boolean                                                                                              | If set to `true` then the image has a title field. True by default. `isBlock` should be `true` if set.                                           |
@@ -94,6 +94,9 @@ Interface for the settings used by this plugin.
 | minSize             | number                                                                                               | Minimum size in `px` of an image. Default 50.                                                                                                    |
 | maxSize             | number                                                                                               | Maximum size in `px` of an image. Default 2000.                                                                                                  |
 | scaleImage          | boolean                                                                                              | If `true` then images scale proportionally with editor width. Default `true`.                                                                    |
+| createDecorations   | (state: EditorState) => DecorationSet                                                                | Generate decorations from plugin state. Needed with YJS.                                                                                         |
+| createState         | (pluginSettings: ImagePluginSettings, schema: Schema) => StateField                                  | Handle editor state differently. Needed with YJS.                                                                                                |
+| findPlaceholder     | (state: EditorState, id: object) => number | undefined                                               | find placeholder position after the image upload is ready. Needed with YJS.                                                                                                 |
 
 ### updateImageNode
 Returns the updated nodes ( `Schema["spec"]["nodes"] type` )
@@ -184,6 +187,63 @@ import "prosemirror-image-plugin/dist/styles/common.css";
 import "prosemirror-image-plugin/dist/styles/withResize.css";
 import "prosemirror-image-plugin/dist/styles/sideResize.css";
 import "prosemirror-image-plugin/dist/styles/withoutResize.css";
+```
+
+### YJS compatibility
+
+Because YJS collab ( as it is right now, will be improved in the future ) replaces the entire document
+on every incoming change decorations will be mapped to nothing. The workaround is to use YJS cursors to save
+positions. You can do this by overriding `createState`, `findPlaceholder`, and `createDecorations`.
+
+```typescript
+const createDecorations = (state: EditorState) => {
+  // @ts-ignore
+  const updatedState: Array<{ id: object; pos: any }> = imagePluginKey.getState(state);
+  const YState = ySyncPluginKey.getState(state);
+  const decors = updatedState.map((i) => {
+    const pos = relativePositionToAbsolutePosition(YState.doc, YState.type, i.pos, YState.binding.mapping);
+    const widget = document.createElement('placeholder');
+    const deco = typeof pos === "number"? Decoration.widget(pos, widget, {
+      id: i.id
+    }): undefined;
+    return deco;
+  });
+  // @ts-ignore
+  return DecorationSet.create(state.doc, decors.filter(i=>i)) || DecorationSet.empty;
+};
+
+interface StateValue {
+  pos: any;
+  id: object;
+}
+
+export const createState = <T extends Schema>() => ({
+  init() {
+    return [];
+  },
+  // @ts-ignore
+  apply(tr: Transaction<T>, value: StateValue[], oldState: EditorState<T>, newState: EditorState<T>): StateValue[] {
+    const action: ImagePluginAction = tr.getMeta(imagePluginKey);
+    if (action?.type === 'add') {
+      const YState = ySyncPluginKey.getState(newState);
+      const relPos = absolutePositionToRelativePosition(action.pos, YState.type, YState.binding.mapping);
+      return [...value, { id: action.id as object, pos: relPos }];
+    } else if (action?.type === 'remove') {
+      return value.filter((i) => i.id !== action.id);
+    }
+    return value;
+  }
+});
+
+const findPlaceholder = (state: EditorState, id: object) => {
+  // @ts-ignore
+  const decos: StateValue[] = imagePluginKey.getState(state);
+  const found = decos?.find((i) => i.id === id);
+  if (!found) return undefined;
+  const YState = ySyncPluginKey.getState(state);
+  const pos = relativePositionToAbsolutePosition(YState.doc, YState.type, found.pos, YState.binding.mapping);
+  return typeof pos === 'number' ? pos : undefined;
+};
 ```
 
 ## Known issues

@@ -22,15 +22,7 @@ export const dataURIToFile = (dataURI: string, name: string) => {
   return new File([u8arr], name, { type: mime });
 };
 
-export const createPlaceholder = () => document.createElement("placeholder");
-
 export const imagePluginKey = new PluginKey<ImagePluginState>("imagePlugin");
-
-const findPlaceholder = (state: EditorState, id: unknown) => {
-  const decos = imagePluginKey.getState(state);
-  const found = decos?.find(undefined, undefined, (spec) => spec.id === id);
-  return found?.length ? found[0].from : undefined;
-};
 
 export const startImageUpload = (
   view: EditorView,
@@ -56,7 +48,7 @@ export const startImageUpload = (
 
   pluginSettings.uploadFile(file).then(
     (url) => {
-      const placholderPos = findPlaceholder(view.state, id);
+      const placholderPos = pluginSettings.findPlaceholder(view.state, id);
       // If the content around the placeholder has been deleted, drop
       // the image
       if (placholderPos == null) return;
