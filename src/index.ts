@@ -11,7 +11,7 @@ import {
 } from "./types";
 
 import updateImageNode from "./updateImageNode";
-import { startImageUpload } from "./utils";
+import { startImageUpload, imagePluginKey } from "./utils";
 
 export {
   updateImageNode,
@@ -24,4 +24,5 @@ export {
   imagePlugin,
   startImageUpload,
   defaultSettings,
+  imagePluginKey,
 };
