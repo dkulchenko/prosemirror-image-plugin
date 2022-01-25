@@ -17,6 +17,7 @@ export interface RemoveImagePlaceholder {
 
 export type ImagePluginAction = InsertImagePlaceholder | RemoveImagePlaceholder;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface ImagePluginSettings<T = any> {
   downloadImage?: (url: string) => Promise<string>;
   downloadPlaceholder?: (url: string, view: EditorView) => string;
