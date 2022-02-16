@@ -1,6 +1,6 @@
 {
   "name": "prosemirror-image-plugin",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "ProseMirror image plugin for advanced image features",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
