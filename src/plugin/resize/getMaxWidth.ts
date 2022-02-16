@@ -23,7 +23,7 @@ export default (el: Node, pluginSettings: ImagePluginSettings): number => {
       width -= pl + pr;
     }
 
-    return Math.max(width, minSize);
+    return Math.min(Math.max(width, minSize), pluginSettings.maxSize);
   }
   return maxSize;
 };
