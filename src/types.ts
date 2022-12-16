@@ -45,10 +45,10 @@ export interface ImagePluginSettings<T = any> {
   minSize: number;
   maxSize: number;
   scaleImage: boolean;
-  createState: <S extends Schema>(
+  createState: (
     pluginSettings: ImagePluginSettings,
-    schema: S
-  ) => StateField<T, S>;
+    schema: Schema
+  ) => StateField<T>;
   createDecorations: (state: EditorState) => DecorationSet;
   findPlaceholder: (state: EditorState, id: object) => number | undefined;
 }

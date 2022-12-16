@@ -7,10 +7,10 @@ import dropHandler from "./dropHandler";
 import imageNodeView from "./imageNodeView";
 import pasteHandler from "./pasteHandler";
 
-const imagePlugin = <T extends Schema>(
-  schema: T,
+const imagePlugin = (
+  schema: Schema,
   pluginSettings: ImagePluginSettings
-): Plugin<ImagePluginState, T> =>
+): Plugin<ImagePluginState> =>
   new Plugin({
     key: imagePluginKey,
     state: pluginSettings.createState(pluginSettings, schema),

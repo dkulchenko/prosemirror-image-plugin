@@ -4,7 +4,7 @@ const setHeight = (element: HTMLElement, width: number, height: number) => {
   // eslint-disable-next-line no-param-reassign
   element.style.height = `${height}px`;
 };
-const setWidth = (element: HTMLElement, width: number, height: number) => {
+const setWidth = (element: HTMLElement, width: number) => {
   // eslint-disable-next-line no-param-reassign
   element.style.width = `${width}px`;
 };

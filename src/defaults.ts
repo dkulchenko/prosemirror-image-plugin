@@ -1,10 +1,10 @@
 import { Decoration, DecorationSet, EditorView } from "prosemirror-view";
-import { Node as PMNode, Schema } from "prosemirror-model";
+import { Node as PMNode } from "prosemirror-model";
 import { EditorState, Transaction } from "prosemirror-state";
 import { imageAlign, ImagePluginAction, ImagePluginSettings } from "./types";
 import { generateChangeAlignment, imagePluginKey } from "./utils";
 
-export const defaultDeleteSrc = (src: string) => Promise.resolve();
+export const defaultDeleteSrc = () => Promise.resolve();
 
 export const defaultUploadFile = (file: File): Promise<string> =>
   new Promise((res) =>
@@ -28,11 +28,7 @@ export const defaultExtraAttributes = {
   maxWidth: null,
 };
 
-export const defaultCreateOverlay = (
-  node: PMNode,
-  getPos: (() => number) | boolean,
-  view: EditorView
-) => {
+export const defaultCreateOverlay = () => {
   const overlay = document.createElement("div");
   overlay.className = "imagePluginOverlay";
   const alignLeft = document.createElement("button");
@@ -103,14 +99,11 @@ const defaultFindPlaceholder = (state: EditorState, id: object) => {
   return found?.length ? found[0].from : undefined;
 };
 
-const defaultCreateState = <T extends Schema>(
-  pluginSettings: ImagePluginSettings,
-  schema: T
-) => ({
+const defaultCreateState = () => ({
   init() {
     return DecorationSet.empty;
   },
-  apply(tr: Transaction<T>, value: DecorationSet<T>): DecorationSet<T> {
+  apply(tr: Transaction, value: DecorationSet): DecorationSet {
     let set = value.map(tr.mapping, tr.doc);
     const action: ImagePluginAction = tr.getMeta(imagePluginKey);
     if (action?.type === "add") {

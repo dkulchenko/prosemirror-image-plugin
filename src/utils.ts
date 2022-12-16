@@ -1,4 +1,4 @@
-import { EditorState, PluginKey } from "prosemirror-state";
+import { PluginKey } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
 import { Node as PMNode, Schema } from "prosemirror-model";
 import {

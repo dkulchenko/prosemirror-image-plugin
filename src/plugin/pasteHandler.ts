@@ -3,11 +3,8 @@ import { Schema } from "prosemirror-model";
 import { ImagePluginSettings } from "../types";
 import { startImageUpload } from "../utils";
 
-export default <T extends Schema>(
-    pluginSettings: ImagePluginSettings,
-    schema: T
-  ) =>
-  (view: EditorView<T>, event: ClipboardEvent) => {
+export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
+  (view: EditorView, event: ClipboardEvent) => {
     // Get the data of clipboard
     const clipboardItems = event?.clipboardData?.items;
     if (!clipboardItems) return false;

@@ -50,7 +50,8 @@ const updateImageNode = (
     parseDOM: [
       {
         tag: "div.imagePluginRoot",
-        getAttrs(dom: HTMLElement) {
+        getAttrs(dom) {
+          if (typeof dom === "string") return {};
           return (
             attributeKeys
               .map((attrKey) => ({

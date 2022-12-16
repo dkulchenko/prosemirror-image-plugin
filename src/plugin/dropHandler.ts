@@ -3,11 +3,8 @@ import { EditorView } from "prosemirror-view";
 import { ImagePluginSettings } from "../types";
 import { dataURIToFile, startImageUpload } from "../utils";
 
-export default <T extends Schema>(
-    pluginSettings: ImagePluginSettings,
-    schema: T
-  ) =>
-  (view: EditorView<T>, event: DragEvent) => {
+export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
+  (view: EditorView, event: DragEvent) => {
     const textData = event?.dataTransfer?.getData("text/html");
     const file = event?.dataTransfer?.files?.[0];
     const posData = view.posAtCoords({
