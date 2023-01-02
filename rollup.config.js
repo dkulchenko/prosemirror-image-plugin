@@ -17,9 +17,7 @@ export default {
   external: [...Object.keys(pkg.dependencies || {})],
   plugins: [
     copy({
-      targets: [
-        { src: "src/styles/**/*", dest: "dist/styles" },
-      ],
+      targets: [{ src: "src/styles/**/*", dest: "dist/styles" }],
     }),
     typescript(),
     terser(),

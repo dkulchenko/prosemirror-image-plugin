@@ -16,7 +16,6 @@
     "lint": "tsc --noEmit && eslint src --ext .ts",
     "test": "echo \"no test specified\" && exit 0",
     "upgrade-interactive": "npm-check --update",
-    "install-peers": "npm-install-peers",
     "publish:np": "np"
   },
   "repository": {
@@ -69,7 +68,6 @@
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.31.11",
-    "npm-install-peers": "^1.2.2",
     "orderedmap": "^2.1.0",
     "prosemirror-commands": "^1.1.4",
     "prosemirror-model": "^1.11.0",
