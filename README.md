@@ -61,7 +61,7 @@ const state = EditorState.create({
       schema: imageSchema,
       menuContent: menu,
     }),
-    imagePlugin(imageSchema, { ...imageSettings }),
+    imagePlugin({ ...imageSettings }),
   ],
 });
 
@@ -95,8 +95,8 @@ Interface for the settings used by this plugin.
 | maxSize             | number                                                                                               | Maximum size in `px` of an image. Default 2000.                                                                                                  |
 | scaleImage          | boolean                                                                                              | If `true` then images scale proportionally with editor width. Default `true`.                                                                    |
 | createDecorations   | (state: EditorState) => DecorationSet                                                                | Generate decorations from plugin state. Needed with YJS.                                                                                         |
-| createState         | (pluginSettings: ImagePluginSettings, schema: Schema) => StateField                                  | Handle editor state differently. Needed with YJS.                                                                                                |
-| findPlaceholder     | (state: EditorState, id: object) => number | undefined                                               | find placeholder position after the image upload is ready. Needed with YJS.                                                                                                 |
+| createState         | (pluginSettings: ImagePluginSetting) => StateField                                                   | Handle editor state differently. Needed with YJS.                                                                                                |
+| findPlaceholder     | (state: EditorState, id: object) => number                                                           | undefined                                               | find placeholder position after the image upload is ready. Needed with YJS.                                                                                                 |
 
 ### updateImageNode
 Returns the updated nodes ( `Schema["spec"]["nodes"] type` )
