@@ -70,8 +70,9 @@ export const startImageUpload = (
       );
     },
     () => {
+      const removeMeta: RemoveImagePlaceholder = { type: "remove", id };
       // On failure, just clean up the placeholder
-      view.dispatch(tr.setMeta(imagePluginKey, { remove: { id } }));
+      view.dispatch(tr.setMeta(imagePluginKey, removeMeta));
     }
   );
 };
