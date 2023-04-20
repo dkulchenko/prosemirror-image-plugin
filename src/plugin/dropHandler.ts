@@ -3,7 +3,7 @@ import { EditorView } from "prosemirror-view";
 import { ImagePluginSettings } from "../types";
 import { dataURIToFile, startImageUpload } from "../utils";
 
-export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
+export default (pluginSettings: ImagePluginSettings) =>
   (view: EditorView, event: DragEvent) => {
     const textData = event?.dataTransfer?.getData("text/html");
     const file = event?.dataTransfer?.files?.[0];
@@ -36,7 +36,7 @@ export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
           fileFromHTML,
           pluginSettings.defaultAlt,
           pluginSettings,
-          schema,
+          view.state.schema,
           posData.pos
         );
       }
@@ -51,7 +51,7 @@ export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
         file,
         pluginSettings.defaultAlt,
         pluginSettings,
-        schema,
+        view.state.schema,
         posData.pos
       );
       event.preventDefault();

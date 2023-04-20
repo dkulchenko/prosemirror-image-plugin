@@ -3,7 +3,7 @@ import { Schema } from "prosemirror-model";
 import { ImagePluginSettings } from "../types";
 import { startImageUpload } from "../utils";
 
-export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
+export default (pluginSettings: ImagePluginSettings) =>
   (view: EditorView, event: ClipboardEvent) => {
     // Get the data of clipboard
     const clipboardItems = event?.clipboardData?.items;
@@ -30,7 +30,7 @@ export default (pluginSettings: ImagePluginSettings, schema: Schema) =>
       file,
       pluginSettings.defaultAlt,
       pluginSettings,
-      schema
+      view.state.schema
     );
     event.preventDefault();
     return true;
