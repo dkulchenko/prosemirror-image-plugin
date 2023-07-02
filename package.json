@@ -1,6 +1,6 @@
 {
   "name": "prosemirror-image-plugin",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "ProseMirror image plugin for advanced image features",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -10,6 +10,7 @@
     "build": "rollup -c --bundleConfigAsCjs",
     "dev": "rollup -c -w --bundleConfigAsCjs",
     "format": "eslint src --ext .ts --fix",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run build && npm test && npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",

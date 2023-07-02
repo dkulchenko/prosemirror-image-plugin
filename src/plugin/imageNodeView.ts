@@ -67,6 +67,12 @@ const imageNodeView =
     Object.keys(node.attrs).map((key) =>
       root.setAttribute(`imageplugin-${key}`, node.attrs[key])
     );
+
+    root.style.marginTop = node.attrs["padding-top"];
+    root.style.marginBottom = node.attrs["padding-bottom"];
+    root.style.marginLeft = node.attrs["padding-left"];
+    root.style.marginRight = node.attrs["padding-right"];
+
     const contentDOM = pluginSettings.hasTitle && document.createElement("div");
     if (contentDOM) {
       contentDOM.className = "imagePluginContent";
@@ -98,6 +104,7 @@ const imageNodeView =
     }
 
     image.alt = node.attrs.alt;
+
     let resizeControls: HTMLDivElement | undefined;
     const updateDOM = () => {
       if (resizeActive) return;
