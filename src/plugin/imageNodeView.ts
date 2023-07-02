@@ -188,6 +188,8 @@ const imageNodeView =
         }
         if (updateNode.attrs.src !== node.attrs.src) {
           image.src = updateNode.attrs.src;
+          image.style.width = "";
+          image.style.height = "";
         }
         root.style.marginTop = updateNode.attrs["padding-top"];
         root.style.marginBottom = updateNode.attrs["padding-bottom"];
