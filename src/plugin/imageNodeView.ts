@@ -113,6 +113,7 @@ const imageNodeView =
         (pluginSettings.enableResize && !dimensions)
       )
         return;
+
       const pos = getPos();
       const updatedNode = view.state.doc.nodeAt(pos);
       if (!updatedNode) return;
@@ -180,6 +181,8 @@ const imageNodeView =
         if (updateNode.type.name !== "image" || !finalSrc) {
           return false;
         }
+        let urlChanged = false;
+
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
 
@@ -190,13 +193,25 @@ const imageNodeView =
           image.src = updateNode.attrs.src;
           image.style.width = "";
           image.style.height = "";
+          urlChanged = true;
         }
         root.style.marginTop = updateNode.attrs["padding-top"];
         root.style.marginBottom = updateNode.attrs["padding-bottom"];
         root.style.marginLeft = updateNode.attrs["padding-left"];
         root.style.marginRight = updateNode.attrs["padding-right"];
 
-        updateDOM();
+        if (urlChanged) {
+          (async () => {
+            finalSrc = await getSrc(image, pluginSettings, updateNode, root, view);
+            if (pluginSettings.enableResize) {
+              dimensions = await getImageDimensions(finalSrc);
+            }
+            updateDOM();
+          })();
+        } else {
+          updateDOM();
+        }
+
         return true;
       },
       ignoreMutation: () => true,
