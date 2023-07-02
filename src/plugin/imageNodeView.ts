@@ -119,6 +119,7 @@ const imageNodeView =
       Object.keys(updatedNode.attrs).map((attr) =>
         root.setAttribute(`imageplugin-${attr}`, updatedNode.attrs[attr])
       );
+
       if (pluginSettings.enableResize && dimensions) {
         const maxWidth = getMaxWidth(root, pluginSettings);
         const finalDimensions = calculateImageDimensions(
@@ -181,6 +182,18 @@ const imageNodeView =
         }
         if (overlay)
           pluginSettings.updateOverlay(overlay, getPos, view, updateNode);
+
+        if (updateNode.attrs.alt !== node.attrs.alt) {
+          image.alt = updateNode.attrs.alt;
+        }
+        if (updateNode.attrs.src !== node.attrs.src) {
+          image.src = updateNode.attrs.src;
+        }
+        root.style.marginTop = updateNode.attrs["padding-top"];
+        root.style.marginBottom = updateNode.attrs["padding-bottom"];
+        root.style.marginLeft = updateNode.attrs["padding-left"];
+        root.style.marginRight = updateNode.attrs["padding-right"];
+
         updateDOM();
         return true;
       },
